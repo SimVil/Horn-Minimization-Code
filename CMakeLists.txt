@@ -20,4 +20,5 @@ add_executable(TestLinClosure
         Tests/Reader.cpp
         Tests/Reader.h
         ${HEADER}
+        ${CODE}
         catch.h Tests/Reader.cpp Tests/Reader.h)

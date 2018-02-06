@@ -10,14 +10,44 @@
 TEST_CASE("FCA::LinClosure::Apply: Simple tests")
 {
     std::string filename("D:/Documents/Courses/Master Thesis/Code/Algorithms/Tests/basis_1.txt");
-    std::vector<FCA::Attribute> sigma;
+    std::vector<FCA::Attribute> sigma_string;
     std::vector<FCA::Implication> basis_string;
+    FCA::BitSet sigma;
+    std::vector<FCA::ImplicationInd> basis;
 
-    Reader::ReadImplicationFile(filename, sigma, basis_string);
+    Reader::ReadImplicationFile(filename, sigma_string, basis_string);
+    FCA::Convert(sigma_string, sigma_string, basis_string, sigma, basis);
 
-    SECTION("Check for correct closure")
+    SECTION("Check That LinClosure computes the right equivalent bitset of a given implication")
     {
-        PrintImplications(std::cout, basis_string);
+        FCA::BitSet equivalent(basis.size());
+        FCA::BitSet expected(basis.size());
+        FCA::BitSet buff(sigma.size());
+        equivalent.reset();
+        expected.reset();
+
+        expected.set(0);
+        expected.set(1);
+
+        FCA::LinClosure::Apply(basis.front().Premise(), basis, buff, 0, &equivalent);
+
+        std::vector<FCA::Attribute> closed = FCA::Convert(buff, sigma_string);
+        std::vector<FCA::Attribute> initial = FCA::Convert(basis.front().Premise(), sigma_string);
+
+        for(const FCA::Attribute &s : initial)
+        {
+            std::cout << s;
+        }
+
+        std::cout << std::endl;
+
+        for(const FCA::Attribute &s : closed)
+        {
+            std::cout << s;
+        }
+
+        std::cout << std::endl;
+        REQUIRE(equivalent == expected);
     }
 }
 

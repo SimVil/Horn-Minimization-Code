@@ -5,6 +5,7 @@
 #include "Reader.h"
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/trim.hpp>
 
 void Reader::ReadImplicationFile(std::string filename, std::vector<FCA::Attribute> &sigma,
                                         std::vector<FCA::Implication> &basis)
@@ -18,13 +19,15 @@ void Reader::ReadImplicationFile(std::string filename, std::vector<FCA::Attribut
     if (file.is_open())
     {
         std::getline(file, line);
-        boost::split(sigma, line, boost::is_any_of(", "));
+        boost::split(sigma, line, boost::is_any_of(" "));
 
         while(std::getline(file, line))
         {
-            boost::split(leftRight, line, boost::is_any_of(" | "));
-            boost::split(premise, leftRight[0], boost::is_any_of(", "));
-            boost::split(conclusion, leftRight[1], boost::is_any_of(", "));
+            boost::split(leftRight, line, boost::is_any_of(">"));
+            boost::trim(leftRight[0]);
+            boost::trim(leftRight[1]);
+            boost::split(premise, leftRight[0], boost::is_any_of(" "));
+            boost::split(conclusion, leftRight[1], boost::is_any_of("  "));
             basis.emplace_back(FCA::Implication(premise, conclusion));
         }
 
