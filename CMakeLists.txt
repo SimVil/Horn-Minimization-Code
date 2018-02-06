@@ -17,5 +17,7 @@ add_executable(Algorithms ${HEADER} ${CODE} main.cpp)
 
 add_executable(TestLinClosure
         Tests/Tests_LinClosure.cpp
+        Tests/Reader.cpp
+        Tests/Reader.h
         ${HEADER}
-        catch.h )
+        catch.h Tests/Reader.cpp Tests/Reader.h)

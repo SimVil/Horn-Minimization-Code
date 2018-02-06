@@ -49,7 +49,7 @@ void ReadContext(FCA::Context &c, std::istream &in)
     c = FCA::Context(obj, attr, table);
 }
 
-void PrintImplications(std::ofstream &output, const std::vector<FCA::Implication> &implications)
+void PrintImplications(std::ostream &output, const std::vector<FCA::Implication> &implications)
 {
     output << implications.size() << std::endl;
     for (size_t i = 0; i < implications.size(); ++i)

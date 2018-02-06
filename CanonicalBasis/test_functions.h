@@ -18,7 +18,7 @@ void ReadContext(FCA::Context &c, std::istream &in);
 
 void ReadImplicatons(std::ifstream &input, std::vector<FCA::Implication> &implications);
 
-void PrintImplications(std::ofstream &output, const std::vector<FCA::Implication> &implications);
+void PrintImplications(std::ostream &output, const std::vector<FCA::Implication> &implications);
 
 void ReadImplicationsAndSets(std::vector<FCA::ImplicationInd> &implications, std::vector<FCA::BitSet> &bitsets, std::ifstream &in);
 
