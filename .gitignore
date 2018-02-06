@@ -26,3 +26,9 @@
 *.exe
 *.out
 *.app
+
+.idea/*
+Documentation/*
+cmake-build-debug/*
+CanonicalBasis/CanonicalBasis.*
+Doxyfile
