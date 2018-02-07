@@ -10,6 +10,7 @@
 
 #include <vector>
 #include "fca_datastructures.h"
+#include "fca_closure_operators.h"
 
 namespace HORN {
     /// \brief implementation of Maier algorithm for implicational basis minimization.
@@ -29,8 +30,11 @@ namespace HORN {
     /// \return [vector<ImplicationInd>] a minimized version of \c L.
     std::vector<FCA::ImplicationInd> MaierMinimization(const std::vector<FCA::ImplicationInd> &L);
 
-    std::vector<FCA::BitSet> GetEquivalenceMatrix(const std::vector<FCA::ImplicationInd> &L);
-}
+    void getEquivalenceMatrix(const std::vector<FCA::ImplicationInd> &L, std::vector<FCA::BitSet> &matrix);
 
+    std::vector<FCA::ImplicationInd> redundancyElimination(const std::vector<FCA::ImplicationInd> &L);
+
+    std::vector<FCA::BitSet> getEquivalenceClasses(const std::vector<FCA::BitSet> &matrix);
+}
 
 #endif //ALGORITHMS_HORN_MAIER_H
