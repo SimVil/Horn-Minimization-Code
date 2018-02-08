@@ -1,8 +1,10 @@
+/// \file Test_Maier_Unit.cpp
+
 
 #define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
 #include "../catch.h"
-#include "../CanonicalBasis/fca_linclosure.h"
 #include "../CanonicalBasis/test_functions.h"
+#include "../CanonicalBasis/horn_maier.h"
 #include "Reader.h"
 
 

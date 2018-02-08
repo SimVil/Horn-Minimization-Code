@@ -3,7 +3,7 @@
 # include "fca_linclosure.h"
 
 bool FCA::LinClosure::Apply(const FCA::BitSet &current, const std::vector<FCA::ImplicationInd> &implications,
-                            FCA::BitSet &res, size_t prefLen, BitSet *implied)
+                            FCA::BitSet &res, size_t prefLen, BitSet *implied,  int *reach)
 {
     if (!implications.empty() && (implications.front().Premise().size() != current.size() || implications.front().Conclusion().size() != current.size()))
         throw std::invalid_argument("size of premise and consclusion must agreed with size of current");
@@ -63,6 +63,13 @@ bool FCA::LinClosure::Apply(const FCA::BitSet &current, const std::vector<FCA::I
                 if(implied)
                 {
                     // L |= X --> Premise(impInd)
+                    // the next condition deserves to detect direct determination
+                    // cf Maier Algorithm
+                    if(implied->test(impInd) and *reach == -1)
+                    {
+                        *reach = impInd;
+
+                    }
                     implied->set(impInd);
                 }
 
