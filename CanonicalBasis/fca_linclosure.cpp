@@ -3,7 +3,7 @@
 # include "fca_linclosure.h"
 
 bool FCA::LinClosure::Apply(const FCA::BitSet &current, const std::vector<FCA::ImplicationInd> &implications,
-                            FCA::BitSet &res, size_t prefLen, BitSet *implied)
+                            FCA::BitSet &res, size_t prefLen, BitSet *implied,  int *reach)
 {
     if (!implications.empty() && (implications.front().Premise().size() != current.size() || implications.front().Conclusion().size() != current.size()))
         throw std::invalid_argument("size of premise and consclusion must agreed with size of current");
@@ -22,7 +22,20 @@ bool FCA::LinClosure::Apply(const FCA::BitSet &current, const std::vector<FCA::I
     
     for (size_t implInd = 0; implInd < implNum; ++implInd)
     {			
-        count[implInd] = implications[implInd].Premise().count();		
+        count[implInd] = implications[implInd].Premise().count();
+
+        if (count[implInd] == 0)
+        {
+            newdep |= implications[implInd].Conclusion();
+            if (implied)
+            {
+                if(implied->test(implInd) && *reach == -1)
+                {
+                    *reach = implInd;
+                }
+                implied->set(implInd);
+            }
+        }
 
         for (size_t attrInd = 0; attrInd < attrNum; ++attrInd)			
             if (implications[implInd].Premise().test(attrInd))		
@@ -35,7 +48,7 @@ bool FCA::LinClosure::Apply(const FCA::BitSet &current, const std::vector<FCA::I
     std::vector<bool> use(attrNum, false);
 
     for (size_t i = 0; i < attrNum; ++i)
-        if (current.test(i))		
+        if (newdep.test(i))
         {
             use[i] = true;
             update.push_back(i);					
@@ -63,6 +76,12 @@ bool FCA::LinClosure::Apply(const FCA::BitSet &current, const std::vector<FCA::I
                 if(implied)
                 {
                     // L |= X --> Premise(impInd)
+                    // the next condition deserves to detect direct determination
+                    // cf Maier Algorithm
+                    if(implied->test(impInd) and *reach == -1)
+                    {
+                        *reach = impInd;
+                    }
                     implied->set(impInd);
                 }
 

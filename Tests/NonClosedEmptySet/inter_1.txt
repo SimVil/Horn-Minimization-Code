@@ -1,0 +1,4 @@
+a b c d e f
+c > a d e f
+e f > a b d
+ > c e
