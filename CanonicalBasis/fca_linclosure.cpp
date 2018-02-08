@@ -22,7 +22,20 @@ bool FCA::LinClosure::Apply(const FCA::BitSet &current, const std::vector<FCA::I
     
     for (size_t implInd = 0; implInd < implNum; ++implInd)
     {			
-        count[implInd] = implications[implInd].Premise().count();		
+        count[implInd] = implications[implInd].Premise().count();
+
+        if (count[implInd] == 0)
+        {
+            newdep |= implications[implInd].Conclusion();
+            if (implied)
+            {
+                if(implied->test(implInd) && *reach == -1)
+                {
+                    *reach = implInd;
+                }
+                implied->set(implInd);
+            }
+        }
 
         for (size_t attrInd = 0; attrInd < attrNum; ++attrInd)			
             if (implications[implInd].Premise().test(attrInd))		
@@ -35,7 +48,7 @@ bool FCA::LinClosure::Apply(const FCA::BitSet &current, const std::vector<FCA::I
     std::vector<bool> use(attrNum, false);
 
     for (size_t i = 0; i < attrNum; ++i)
-        if (current.test(i))		
+        if (newdep.test(i))
         {
             use[i] = true;
             update.push_back(i);					
@@ -68,7 +81,6 @@ bool FCA::LinClosure::Apply(const FCA::BitSet &current, const std::vector<FCA::I
                     if(implied->test(impInd) and *reach == -1)
                     {
                         *reach = impInd;
-
                     }
                     implied->set(impInd);
                 }

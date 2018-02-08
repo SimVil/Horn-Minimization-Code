@@ -16,7 +16,7 @@ file(GLOB CODE "CanonicalBasis/*.cpp")
 add_executable(Algorithms ${HEADER} ${CODE} Tests/Reader.cpp
         Tests/Reader.h main.cpp)
 
-add_executable(TestLinClosure
+add_executable(TestMaier
         Tests/Test_Maier_Unit.cpp
         Tests/Reader.cpp
         Tests/Reader.h

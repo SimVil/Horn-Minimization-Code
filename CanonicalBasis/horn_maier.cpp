@@ -23,13 +23,13 @@ std::vector<FCA::ImplicationInd> HORN::redundancyElimination(const std::vector<F
 
     for(int i = 0; i < implNum; ++i)
     {
-        tmp = Lirr.back();
-        Lirr.pop_back();
+        tmp = Lirr.front();
+        Lirr.erase(Lirr.begin());
 
         FCA::LinClosure::Apply(tmp.Premise(), Lirr, closure);
         if(!tmp.Conclusion().is_subset_of(closure))  // L - {A --> B} |/= A --> B
         {
-            Lirr.insert(Lirr.begin(), tmp);
+            Lirr.push_back(tmp);
         }
     }
 
@@ -156,11 +156,12 @@ std::vector<FCA::ImplicationInd> HORN::MaierMinimization(const std::vector<FCA::
             {
                 E_L[e_x].reset(imp);
                 tmpL[ddet].Conclusion() |= tmpL[imp].Conclusion();
-                minL[ddet].Conclusion() |= minL[imp].Conclusion();
+                minL[ddet - shift].Conclusion() |= tmpL[imp].Conclusion();
                 tmpL[imp].Conclusion().reset(); // "deleting" implication
                 tmpL[imp].Premise().reset(); // we must wait to truly remove it to keep
                                              // the sizes of E_L and minL coherent in LinClosure.
                 minL.erase(minL.begin() + imp - shift);
+                shift++;
                 ddet = -1;
 
             }

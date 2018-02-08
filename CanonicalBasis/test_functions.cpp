@@ -104,7 +104,7 @@ bool IsVectorOfImplicationsIdentical(std::vector<FCA::Implication> v1, std::vect
         std::sort(v1p[i].second.begin(), v1p[i].second.end());		
     }
 
-    for (size_t i = 0; i < v1p.size(); ++i)
+    for (size_t i = 0; i < v2p.size(); ++i)
     {
         std::sort(v2p[i].first.begin(), v2p[i].first.end());
         std::sort(v2p[i].second.begin(), v2p[i].second.end());		
