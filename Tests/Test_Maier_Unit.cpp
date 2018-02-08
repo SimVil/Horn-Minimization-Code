@@ -60,24 +60,37 @@ TEST_CASE("Maier Algorithm: empty basis")
 /// \note For this test, we use automated file testing. For each basis we have 3 files (input, inter, output) containing
 /// respectively the original input, the basis after redundancy elimination, the expected minimum basis. Using a reader
 /// we can check for equivalence after each steps.
-TEST_CASE("Maier Algorithm: contradictions")
+//TEST_CASE("Maier Algorithm: contradictions")
+//{
+//    std::string path = "D:/Documents/Courses/Master Thesis/Code/Algorithms/Tests/Contradictions/";
+//    std::string extension = ".txt";
+//
+//    unsigned int tests_nb = 2;  // number of contradictions cases to run.
+//    unsigned int seq_len = 3;  // input, inter, output
+//    std::vector<std::string> filenames = {"input", "inter", "output"};
+//
+//    SequenceTesting(path, extension, filenames, tests_nb);
+//
+//}
+
+
+
+//TEST_CASE("Maier Algorithm: non-closed empty set")
+//{
+//    std::string path = "D:/Documents/Courses/Master Thesis/Code/Algorithms/Tests/NonClosedEmptySet/";
+//    std::string extension = ".txt";
+//
+//    unsigned int tests_nb = 3;
+//    unsigned int seq_len = 3;
+//    std::vector<std::string> filenames = {"input", "inter", "output"};
+//
+//    SequenceTesting(path, extension, filenames, tests_nb);
+//}
+
+
+TEST_CASE("Maier Algorithm: some standard tests")
 {
-    std::string path = "D:/Documents/Courses/Master Thesis/Code/Algorithms/Tests/Contradictions/";
-    std::string extension = ".txt";
-
-    unsigned int tests_nb = 2;  // number of contradictions cases to run.
-    unsigned int seq_len = 3;  // input, inter, output
-    std::vector<std::string> filenames = {"input", "inter", "output"};
-
-    SequenceTesting(path, extension, filenames, tests_nb);
-
-}
-
-
-
-TEST_CASE("Maier Algorithm: non-closed empty set")
-{
-    std::string path = "D:/Documents/Courses/Master Thesis/Code/Algorithms/Tests/NonClosedEmptySet/";
+    std::string path = "D:/Documents/Courses/Master Thesis/Code/Algorithms/Tests/Standard/";
     std::string extension = ".txt";
 
     unsigned int tests_nb = 1;
@@ -118,7 +131,7 @@ void SequenceTesting(const std::string &path, const std::string &extension, cons
         minL = HORN::redundancyElimination(L);
         buffL = FCA::Convert(minL, sigma_s);
 
-        REQUIRE(IsVectorOfImplicationsIdentical(buffL, basis[1]));
+        CHECK(IsVectorOfImplicationsIdentical(buffL, basis[1]));
 
         minL = HORN::MaierMinimization(L);
         buffL = FCA::Convert(minL, sigma_s);
