@@ -13,13 +13,22 @@ include_directories(CanonicalBasis)
 include_directories(HornMinimization)
 file(GLOB HEADER "CanonicalBasis/*.h")
 file(GLOB CODE "CanonicalBasis/*.cpp")
-add_executable(Algorithms ${HEADER} ${CODE} Tests/Reader.cpp
-        Tests/Reader.h main.cpp)
+add_executable(Algorithms ${HEADER} ${CODE}
+        main.cpp)
 
 add_executable(TestMaier
+        catch.h
         Tests/Test_Maier_Unit.cpp
-        Tests/Reader.cpp
-        Tests/Reader.h
+        Tests/Testers/Tester.cpp
+        Tests/Testers/Tester.h
+        Tests/Testers/MaierTester.cpp
+        Tests/Testers/MaierTester.h
         ${HEADER}
         ${CODE}
-        catch.h Tests/Reader.cpp Tests/Reader.h)
+        )
+
+add_executable(TestBerczi
+        Tests/Test_Berczi_Unit.cpp
+        ${HEADER}
+        ${CODE}
+        catch.h)

@@ -49,6 +49,11 @@ namespace FCA
         /// \return [bool] \c true if the set is empty (all bits to 0), \c false otherwise.
         bool none() const;
 
+        /// \brief Tests whether all bits are set or not.
+        ///
+        /// \return \c true if the set is "full", false otherwise.
+        bool all() const;
+
         /// \brief Tests whether \c ind -th bit of the set is 1.
 
         /// \param [in, const] ind

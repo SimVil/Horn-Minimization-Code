@@ -15,15 +15,12 @@
 /// Tests will split over various parts of the algorithm (see horn_maier.h for more details).
 
 
+
 #define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
 #include "../catch.h"
-#include "../CanonicalBasis/test_functions.h"
-#include "../CanonicalBasis/horn_maier.h"
-#include "Reader.h"
+#include "Testers/MaierTester.h"
 
 
-void SequenceTesting(const std::string &path, const std::string &extension, const std::vector<std::string> &filenames,
-                     const unsigned &tests_nb );
 
 /// \brief Test of empty basis.
 ///
@@ -66,11 +63,12 @@ TEST_CASE("Maier Algorithm: contradictions")
     std::string extension = ".txt";
 
     unsigned int tests_nb = 2;  // number of contradictions cases to run.
-    unsigned int seq_len = 3;  // input, inter, output
     std::vector<std::string> filenames = {"input", "inter", "output"};
 
+    MaierTester tester;
+
     std::cout << "Test Case: Contradictions" << std::endl << std::endl;
-    SequenceTesting(path, extension, filenames, tests_nb);
+    tester.TestingSequence(path, extension, filenames, tests_nb);
 
 }
 
@@ -87,11 +85,12 @@ TEST_CASE("Maier Algorithm: non-closed empty set")
     std::string extension = ".txt";
 
     unsigned int tests_nb = 3;
-    unsigned int seq_len = 3;
     std::vector<std::string> filenames = {"input", "inter", "output"};
 
+    MaierTester tester;
+
     std::cout << "Test Case: Non-closed Emptyset" << std::endl << std::endl;
-    SequenceTesting(path, extension, filenames, tests_nb);
+    tester.TestingSequence(path, extension, filenames, tests_nb);
 }
 
 
@@ -104,12 +103,12 @@ TEST_CASE("Maier Algorithm: some standard tests")
     std::string extension = ".txt";
 
     unsigned int tests_nb = 3;
-    unsigned int seq_len = 3;
     std::vector<std::string> filenames = {"input", "inter", "output"};
 
-    std::cout << "Test Case: Standard cases" << std::endl << std::endl;
+    MaierTester tester;
 
-    SequenceTesting(path, extension, filenames, tests_nb);
+    std::cout << "Test Case: Standard cases" << std::endl << std::endl;
+    tester.TestingSequence(path, extension, filenames, tests_nb);
 }
 
 
@@ -123,79 +122,12 @@ TEST_CASE("Maier Algorithm: Non-reduced form")
     std::string extension = ".txt";
 
     unsigned int tests_nb = 1;
-    unsigned int seq_len = 3;
     std::vector<std::string> filenames = {"input", "inter", "output"};
 
+    MaierTester tester;
+
     std::cout << "Test Case: Non-Reduced cases" << std::endl << std::endl;
-
-    SequenceTesting(path, extension, filenames, tests_nb);
+    tester.TestingSequence(path, extension, filenames, tests_nb);
 }
 
 
-/// \brief summarizes a test sequence over tests files.
-///
-/// The function reads a list of file with some implication basis to test. It
-/// corresponds in a way to scenario. The first file should be an input file, the
-/// input basis. Consequent files should be results according to some tests going
-/// to be done.
-///
-/// TODO: rewrite to discard indices (basis[0], basis[1], basis[2]).
-///
-/// \param [in] path path of the files.
-/// \param [in] extension extension of the files (e.g: txt)
-/// \param [in] filenames the sequence of files to read (~scenario)
-/// \param [in] tests_nb number of sequence to treat.
-void SequenceTesting(const std::string &path, const std::string &extension, const std::vector<std::string> &filenames,
-                     const unsigned &tests_nb )
-{
-    unsigned int seq_len = filenames.size();
-    std::vector<std::string> buffer(seq_len);
-    std::vector<std::vector<FCA::Implication>> basis(seq_len);
-    std::vector<FCA::Attribute> sigma_s;
-    std::vector<FCA::ImplicationInd> L;
-    std::vector<FCA::ImplicationInd> minL;
-    std::vector<FCA::Implication> buffL;
-    FCA::BitSet sigma;
-
-    for(int i = 1; i <= tests_nb; ++i)
-    {
-        for(int j = 0; j < seq_len; ++j)
-        {
-            buffer[j] = path;
-            buffer[j] += filenames[j];
-            buffer[j] += "_";
-            buffer[j] += std::to_string(i);
-            buffer[j] += extension;
-        }
-
-        Reader::FileSequenceHandler(buffer, basis, sigma_s);
-        FCA::Convert(sigma_s, sigma_s, basis[0], sigma, L);
-
-        minL = HORN::redundancyElimination(L);
-        buffL = FCA::Convert(minL, sigma_s);
-
-        CHECK(IsVectorOfImplicationsIdentical(buffL, basis[1]));
-
-        minL = HORN::MaierMinimization(L);
-        buffL = FCA::Convert(minL, sigma_s);
-
-        REQUIRE(IsVectorOfImplicationsIdentical(buffL, basis[2]));
-
-        std::cout << "---- FILE: " << i << " ----" << std::endl;
-        std::cout << "Input:" << std::endl;
-        PrintImplications(std::cout, basis[0]);
-        std::cout << "Expected:" << std::endl;
-        PrintImplications(std::cout, basis[2]);
-        std::cout << "Output:" << std::endl;
-        PrintImplications(std::cout, buffL);
-        std::cout << "---- ==== ----" << std::endl;
-
-        for(int j = 0; j < seq_len; ++j)
-        {
-            basis[j].clear();
-        }
-
-        L.clear();
-
-    }
-}
