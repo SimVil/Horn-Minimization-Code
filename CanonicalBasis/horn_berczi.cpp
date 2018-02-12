@@ -9,9 +9,10 @@ std::vector<FCA::ImplicationInd> HORN::BercziMinimization(const std::vector<FCA:
     if (L.empty())
         return L;
 
-    unsigned int implNum = L.size();
-    unsigned int attrNum = L.front().Premise().size();
-    unsigned int min_index = 0;
+    unsigned long implNum = L.size();
+    unsigned long attrNum = L.front().Premise().size();
+    size_t min_index = 0;
+    bool found = false; // allows to deal with empty canonical basis.
 
     std::vector<FCA::ImplicationInd> minL;
 
@@ -38,6 +39,7 @@ std::vector<FCA::ImplicationInd> HORN::BercziMinimization(const std::vector<FCA:
                     min_minL = closure_minL;
                     min_L = closure_L;
                     min_index = imp;
+                    found = true;
                 }
 
                 if (closure_L == closure_minL)
@@ -47,10 +49,15 @@ std::vector<FCA::ImplicationInd> HORN::BercziMinimization(const std::vector<FCA:
             }
         }
 
-        minL.emplace_back(FCA::ImplicationInd(min_minL, min_L));
-        closed.set(min_index);
-        min_index = 0;
-        min_minL.set();
+        if(found)
+        {
+            minL.emplace_back(FCA::ImplicationInd(min_minL, min_L));
+            closed.set(min_index);
+            min_index = 0;
+            min_minL.set();
+            found = false;
+        }
+
     }
 
     return minL;

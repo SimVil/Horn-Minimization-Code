@@ -11,7 +11,7 @@
 void Tester::TestingSequence(const std::string &path, const std::string &extension,
                              const std::vector<std::string> &filenames, const unsigned &tests_nb)
 {
-    unsigned int seq_len = filenames.size();
+    unsigned long seq_len = filenames.size();
     std::vector<std::string> buffer(seq_len);
     std::vector<std::vector<FCA::Implication>> basis(seq_len);
     std::vector<FCA::Attribute> sigma_s;
@@ -41,6 +41,7 @@ void Tester::TestingSequence(const std::string &path, const std::string &extensi
         for(int k = 0; k < buffL.size(); ++k)
         {
             REQUIRE(IsVectorOfImplicationsIdentical(buffL[k], basis[k + 1]));
+            WARN("File: " << i);
         }
 
         for(int j = 0; j < seq_len; ++j)
@@ -74,13 +75,14 @@ void Tester::ReadImplicationFile(const std::string &filename, std::vector<FCA::A
     if (file.is_open())
     {
         std::getline(file, line);
+        boost::trim(line);
         boost::split(sigma, line, boost::is_any_of(" "));
 
         while(std::getline(file, line))
         {
             boost::split(leftRight, line, boost::is_any_of(">"));
-            boost::trim(leftRight[0]);
-            boost::trim(leftRight[1]);
+            boost::trim_if(leftRight[0], boost::is_any_of(" \r"));
+            boost::trim_if(leftRight[1], boost::is_any_of(" \r"));
             boost::split(premise, leftRight[0], boost::is_any_of(" "));
             boost::split(conclusion, leftRight[1], boost::is_any_of("  "));
             Tester::HandleEmpty(premise);
@@ -103,7 +105,7 @@ void Tester::ReadingSequence(std::vector<std::string> &filenames, std::vector<st
                              std::vector<FCA::Attribute> &sigma)
 {
 
-    unsigned int file_nb = filenames.size();
+    unsigned long file_nb = filenames.size();
 
     if(file_nb != basis.size()){
         throw ("Tester::ReadingSequence: we need as much basis as files to read.");
@@ -112,5 +114,28 @@ void Tester::ReadingSequence(std::vector<std::string> &filenames, std::vector<st
     for(int i = 0; i < file_nb; ++i)
     {
         Tester::ReadImplicationFile(filenames[i], sigma, basis[i]);
+    }
+}
+
+
+
+void Tester::Test(const std::vector<std::pair<std::string, unsigned int>> &testcases,
+                  const std::vector<std::string> &filenames,
+                  const std::string &root,
+                  const std::string &extension)
+{
+    std::string path;
+    unsigned long tests_nb = testcases.size();
+    for(int i = 0; i < tests_nb; ++i)
+    {
+        SECTION(testcases[i].first)
+        {
+            std::cout << "---- Beginning case: " << testcases[i].first << std::endl;
+            path = root;
+            path += testcases[i].first;
+            path += "/";
+            TestingSequence(path, extension, filenames, testcases[i].second);
+            std::cout << "---- Ending case. ----" << std::endl;
+        }
     }
 }

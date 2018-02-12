@@ -5,4 +5,4 @@ d > e f
 c f > e
 b c d > a
 e f > a c
-a b > 
+a b >

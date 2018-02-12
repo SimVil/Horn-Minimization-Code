@@ -14,10 +14,11 @@
 ///     - ...
 /// Tests will split over various parts of the algorithm (see horn_berczi.h for more details).
 
-// #define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
+#define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
 #include "../catch.h"
-#include "../CanonicalBasis/test_functions.h"
 #include "../CanonicalBasis/horn_berczi.h"
+#include "Testers/BercziTester.h"
+#include <gperftools/profiler.h>
 
 
 /// \brief Test of empty basis.
@@ -27,7 +28,7 @@
 ///     - Expected output:
 ///         -# irredundancy: Lc = {}
 ///         -# maier minimization:  Lc = {}
-TEST_CASE("Maier Algorithm: empty basis")
+TEST_CASE("Berczi Algorithm: empty basis")
 {
     std::vector<FCA::ImplicationInd> L;
     std::vector<FCA::ImplicationInd> minL = HORN::BercziMinimization(L);
@@ -35,3 +36,29 @@ TEST_CASE("Maier Algorithm: empty basis")
 
     REQUIRE(minL.empty());
 }
+
+
+
+TEST_CASE("Berczi Algorithm: Non-empty basis")
+{
+
+    ProfilerStart("/home/simon/share/Algorithms/out.prof");
+    std::string root = "/home/simon/share/Algorithms/Tests/";
+    BercziTester tester;
+
+    std::vector<std::pair<std::string, unsigned >> testcases = {
+            {"Contradictions",    2},
+            {"NonClosedEmptySet", 3},
+            {"NonReduced",        1},
+            {"Standard",          3}};
+
+    std::vector<std::string> filenames = {"input", "DG"};
+
+    for(int i = 0; i < 1000; i++)
+    {
+        tester.Test(testcases, filenames, root);
+    }
+
+    ProfilerStop();
+}
+

@@ -19,11 +19,20 @@ public:
                                   const std::vector<FCA::ImplicationInd> &L,
                                   const std::vector<FCA::Attribute> &sigma) = 0;
 
-    void TestingSequence(const std::string &path, const std::string &extension, const std::vector<std::string> &filenames,
+    void TestingSequence(const std::string &path,
+                         const std::string &extension,
+                         const std::vector<std::string> &filenames,
                          const unsigned &tests_nb);
 
-    static void ReadingSequence(std::vector<std::string> &filenames, std::vector<std::vector<FCA::Implication>> &basis,
+    static void ReadingSequence(std::vector<std::string> &filenames,
+                                std::vector<std::vector<FCA::Implication>> &basis,
                                 std::vector<FCA::Attribute> &sigma);
+
+    void Test(const std::vector<std::pair<std::string, unsigned int>> &testcases,
+              const std::vector<std::string> &filenames,
+              const std::string &root,
+              const std::string &extension = ".txt"
+            );
 
 protected:
 

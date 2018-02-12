@@ -74,7 +74,10 @@ namespace HORN {
     /// on \a equivalence \a classes. For a given premise A, we must find all other implications with premises
     /// equivalent to A. If we can reach such a premise B without the implications we found, we say that A directly
     /// determines B. Thus, we can remove the implication having A as a premise, and update the implication related
-    /// to B.
+    /// to B. Note: in order to stick as much as possible to theoretical complexity, we exchanged the running process.
+    /// That is, instead of going over all equivalence classes and then over all implications, we go over all
+    /// implications and then over all equivalence classes. This is because removing an implication and shifting
+    /// the vector in memory can be consuming. Thus, doing the first way would result in an O(B(L)) loop more.
     ///
     /// \param [in] L the basis to minimize.
     /// \return a minimized version of \c L.

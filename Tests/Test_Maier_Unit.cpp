@@ -46,88 +46,18 @@ TEST_CASE("Maier Algorithm: empty basis")
     REQUIRE(minL.empty());
 }
 
-/// \brief Test of various contradiction possibilities.
-///
-/// The input will be implicational basis with contradictions. Contradictions are implications A --> {}. The algorithm
-/// should remove them because they are redundant:
-///     - Input: L with implication(s) A --> {}
-///     - Expected output:
-///         -# irredundancy: L_c with contradiction removed
-///         -# maier minimization: a minimal basis.
-/// \note For this test, we use automated file testing. For each basis we have 3 files (input, inter, output) containing
-/// respectively the original input, the basis after redundancy elimination, the expected minimum basis. Using a reader
-/// we can check for equivalence after each steps.
-TEST_CASE("Maier Algorithm: contradictions")
-{
-    std::string path = "D:/Documents/Courses/Master Thesis/Code/Algorithms/Tests/Contradictions/";
-    std::string extension = ".txt";
 
-    unsigned int tests_nb = 2;  // number of contradictions cases to run.
-    std::vector<std::string> filenames = {"input", "inter", "output"};
-
+TEST_CASE("Maier Algorithm: Non-empty basis") {
+    std::string root = "D:/Documents/Courses/Master Thesis/Code/Algorithms/Tests/";
     MaierTester tester;
 
-    std::cout << "Test Case: Contradictions" << std::endl << std::endl;
-    tester.TestingSequence(path, extension, filenames, tests_nb);
+    std::vector<std::pair<std::string, unsigned >> testcases = {
+            {"Contradictions",    2},
+            {"NonClosedEmptySet", 3},
+            {"NonReduced",        1},
+            {"Standard",          3}};
 
-}
-
-
-/// \brief Test of basis with non-closed empty-set.
-///
-/// The input is a basis with some {} --> A implications. This should increase redundancy and direct
-/// determination probability:
-///     - Input: L with implications {} --> A
-///  We just expect irredundant and minimal basis as results.
-TEST_CASE("Maier Algorithm: non-closed empty set")
-{
-    std::string path = "D:/Documents/Courses/Master Thesis/Code/Algorithms/Tests/NonClosedEmptySet/";
-    std::string extension = ".txt";
-
-    unsigned int tests_nb = 3;
     std::vector<std::string> filenames = {"input", "inter", "output"};
 
-    MaierTester tester;
-
-    std::cout << "Test Case: Non-closed Emptyset" << std::endl << std::endl;
-    tester.TestingSequence(path, extension, filenames, tests_nb);
+    tester.Test(testcases, filenames, root);
 }
-
-
-/// \brief Test of "standard" basis.
-///
-/// Input is a basis randomly generated (reduced).
-TEST_CASE("Maier Algorithm: some standard tests")
-{
-    std::string path = "D:/Documents/Courses/Master Thesis/Code/Algorithms/Tests/Standard/";
-    std::string extension = ".txt";
-
-    unsigned int tests_nb = 3;
-    std::vector<std::string> filenames = {"input", "inter", "output"};
-
-    MaierTester tester;
-
-    std::cout << "Test Case: Standard cases" << std::endl << std::endl;
-    tester.TestingSequence(path, extension, filenames, tests_nb);
-}
-
-
-/// \brief Test of non-reduced form.
-///
-/// The input is a basis with implications A --> B, such that A n B != {} (possibly).
-/// The algorithm is expected to work the same way as usual.
-TEST_CASE("Maier Algorithm: Non-reduced form")
-{
-    std::string path = "D:/Documents/Courses/Master Thesis/Code/Algorithms/Tests/NonReduced/";
-    std::string extension = ".txt";
-
-    unsigned int tests_nb = 1;
-    std::vector<std::string> filenames = {"input", "inter", "output"};
-
-    MaierTester tester;
-
-    std::cout << "Test Case: Non-Reduced cases" << std::endl << std::endl;
-    tester.TestingSequence(path, extension, filenames, tests_nb);
-}
-
-
