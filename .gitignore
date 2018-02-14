@@ -27,6 +27,7 @@
 *.out
 *.app
 
+*.prof
 .idea/*
 Documentation/*
 cmake-build-debug/*

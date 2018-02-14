@@ -3,7 +3,7 @@
 #include "CanonicalBasis/horn_berczi.h"
 #include "CanonicalBasis/test_functions.h"
 #include <boost/timer/timer.hpp>
-//#include <gperftools/profiler.h>
+#include <gperftools/profiler.h>
 
 
 int main(int, char **) {
@@ -22,12 +22,12 @@ int main(int, char **) {
     }
 
     boost::timer::auto_cpu_timer t;
-    //ProfilerStart("/home/simon/share/Algorithms/out.prof");
+    ProfilerStart("/home/simon/share/Algorithms/out.prof");
     for(int j = 0; j < nummin; ++j)
     {
         maierL = HORN::MaierMinimization(L);
         bercziL = HORN::BercziMinimization(L);
     }
-    //ProfilerStop();
+    ProfilerStop();
     return 0;
 }
