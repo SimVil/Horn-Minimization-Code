@@ -11,6 +11,10 @@ bool FCA::BitSet::none() const
     return m_bs.none(); 
 }
 
+bool FCA::BitSet::all() const {
+    return m_bs.all();
+}
+
 bool FCA::BitSet::test(const size_t ind) const 
 { 
     return m_bs.test(ind);
