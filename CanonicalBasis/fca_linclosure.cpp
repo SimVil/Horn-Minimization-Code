@@ -78,7 +78,7 @@ bool FCA::LinClosure::Apply(const FCA::BitSet &current, const std::vector<FCA::I
                     // L |= X --> Premise(impInd)
                     // the next condition deserves to detect direct determination
                     // cf Maier Algorithm
-                    if(implied->test(impInd) and *reach == -1)
+                    if(implied->test(impInd) && *reach == -1)
                     {
                         *reach = impInd;
                     }

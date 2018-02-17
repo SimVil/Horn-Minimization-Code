@@ -1,33 +1,31 @@
 #include <iostream>
-#include "CanonicalBasis/horn_maier.h"
-#include "CanonicalBasis/horn_berczi.h"
+#include <vector>
 #include "CanonicalBasis/test_functions.h"
-#include <boost/timer/timer.hpp>
-#include <gperftools/profiler.h>
+#include "CanonicalBasis/graph_FDgraph.h"
+// #include <boost/timer/timer.hpp>
+
+// #include <gperftools/profiler.h>
 
 
 int main(int, char **) {
 
-    size_t implNum = 100;
-    size_t attrNum = 50;
-    int nummin = 50;
+    size_t implNum = 4;
+    size_t attrNum = 5;
 
+    std::vector<std::string> sigma = {"a", "b", "c", "d", "e"};
     std::vector<FCA::ImplicationInd> L(implNum);
-    std::vector<FCA::ImplicationInd> maierL;
-    std::vector<FCA::ImplicationInd> bercziL;
+    std::vector<FCA::ImplicationInd> Lbis;
 
     for(size_t i = 0; i < implNum; ++i)
     {
-        L[i] = FCA::ImplicationInd(GetRandomBitSet(attrNum, 0.75), GetRandomBitSet(attrNum, 0.50));
+        L[i] = FCA::ImplicationInd(GetRandomBitSet(attrNum, 0.50), GetRandomBitSet(attrNum, 0.50));
     }
 
-    boost::timer::auto_cpu_timer t;
-    ProfilerStart("/home/simon/share/Algorithms/out.prof");
-    for(int j = 0; j < nummin; ++j)
-    {
-        maierL = HORN::MaierMinimization(L);
-        bercziL = HORN::BercziMinimization(L);
-    }
-    ProfilerStop();
+    PrintImplications(std::cout, FCA::Convert(L, sigma));
+    GRAPH::FDGraph g(L);
+    Lbis = g.Convert();
+
+    PrintImplications(std::cout, FCA::Convert(Lbis, sigma));
+  
     return 0;
 }

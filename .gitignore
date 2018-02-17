@@ -28,9 +28,15 @@
 *.app
 
 
+boost/*
 .idea/*
 Documentation/*
 cmake-build-debug/*
 CanonicalBasis/CanonicalBasis.*
 Doxyfile
 out.prof
+.vs/*
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.json

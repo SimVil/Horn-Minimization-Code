@@ -45,6 +45,11 @@ void FCA::BitSet::flip()
     m_bs.flip(); 
 }
 
+
+unsigned long FCA::BitSet::to_ulong() {
+    return m_bs.to_ulong();
+}
+
 bool FCA::BitSet::is_subset_of(const FCA::BitSet &a) const 
 { 
     return m_bs.is_subset_of(a.m_bs); 

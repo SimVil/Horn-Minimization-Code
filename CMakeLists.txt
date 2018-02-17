@@ -1,53 +1,70 @@
+# -----------------------------------------------------------------------------
+# File:    CMAKE script
+# Project: Algorithms
+# Author:  Simon Vilmin
+# Date:    2018
+#
+# Aims to setup Algorithms project structure.
+# -----------------------------------------------------------------------------
+
+# ==== General settings ==== #
 cmake_minimum_required(VERSION 3.9)
 project(Algorithms)
-
 set(CMAKE_CXX_STANDARD 11)
-# set(BOOST_ROOT "/home/simon/Documents/boost_1_66_0")
-set(BOOST_ROOT "C:/Program Files/boost/boost_1_66_0")
-
-SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS}" )
-SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS}" )
 
 
+# ==== Files to handle ==== #
+# CanonicalBasis/ contains all algorithms .h and .cpp
+include_directories(CanonicalBasis)
+file(GLOB ALGO_HEADER "CanonicalBasis/*.h")
+file(GLOB ALGO_CODE "CanonicalBasis/*.cpp")
 
-find_package(Boost)
-IF (Boost_FOUND)
+# Tests/ contains unit testing interfaces and mains.
+include_directories(Tests)
+file(GLOB TEST_INTERFACE "Tests/Tester/Tester.cpp Tests/Tester/Tester.h")
+file(GLOB TEST_MAIER "Tests/Tester/TestMaier.cpp Tests/Tester/TestMaier.h")
+file(GLOB TEST_BERCZI "Tests/Tester/TestBerczi.cpp Tests/Tester/TestBerczi.h")
+
+
+# ==== Boost settings ==== #
+set(BOOST_ROOT "${PROJECT_SOURCE_DIR}/boost")
+set(BOOST_LIBRARYDIR "${BOOST_ROOT}/lib")
+set(Boost_USE_STATIC_LIBS ON)
+
+message(WARNING "Pouet ${PROJECT_SOURCE_DIR}")
+
+find_package(Boost REQUIRED)
+if (Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIR})
 endif()
 
-include_directories(CanonicalBasis)
-include_directories(HornMinimization)
-file(GLOB HEADER "CanonicalBasis/*.h")
-file(GLOB CODE "CanonicalBasis/*.cpp")
 
-add_executable(Algorithms ${HEADER} ${CODE}
-        main.cpp)
+# ==== Targets and executables ==== #
+
+add_executable(Algorithms
+        main.cpp
+        ${ALGO_HEADER}
+        ${ALGO_CODE}
+        )
+target_link_libraries(Algorithms)
 
 add_executable(TestMaier
         catch.h
         Tests/Test_Maier_Unit.cpp
-        Tests/Testers/Tester.cpp
-        Tests/Testers/Tester.h
-        Tests/Testers/MaierTester.cpp
-        Tests/Testers/MaierTester.h
-        ${HEADER}
-        ${CODE}
+        ${TEST_INTERFACE}
+		${TEST_MAIER}
+        ${ALGO_HEADER}
+        ${ALGO_CODE}
         )
 
 add_executable(TestBerczi
         catch.h
-        Tests/Test_Berczi_Unit.cpp
-        Tests/Testers/Tester.cpp
-        Tests/Testers/Tester.h
-        Tests/Testers/BercziTester.cpp
-        Tests/Testers/BercziTester.h
-        ${HEADER}
-        ${CODE}
+		Tests/Test_Berczi_Unit.cpp
+        ${TEST_INTERFACE}
+		${TEST_BERCZI}
+        ${ALGO_HEADER}
+        ${ALGO_CODE}
         )
 
 
-# target_link_libraries(Algorithms profiler boost_timer)
-find_library(BOOST_TIMER libboost_timer-mgw63-mt-sd-x32-1_66 "C:/Program Files/boost/boost_1_66_0/stage/lib")
-find_library(BOOST_SYSTEM libboost_system-mgw63-mt-sd-x32-1_66 "C:/Program Files/boost/boost_1_66_0/stage/lib")
-find_library(BOOST_CHRONO libboost_chrono-mgw63-mt-sd-x32-1_66 "C:/Program Files/boost/boost_1_66_0/stage/lib")
-target_link_libraries(Algorithms ${BOOST_TIMER} ${BOOST_SYSTEM} ${BOOST_CHRONO})
+

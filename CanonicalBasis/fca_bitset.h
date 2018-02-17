@@ -19,6 +19,7 @@
 
 # ifdef BOOST_BITSET_ON
 # include <boost/dynamic_bitset.hpp>
+# include <string>
 # endif //BOOST_BITSET_ON
 
 # ifdef MAGIC_BITSET_ON
@@ -80,6 +81,8 @@ namespace FCA
         ///
         /// Note: this can be used as a "complement" function with respect to the universe we are working with.
         void flip();
+
+        unsigned long to_ulong();
 
         /// \brief Checks whether \c a is a subset of our set (large inclusion).
         ///
