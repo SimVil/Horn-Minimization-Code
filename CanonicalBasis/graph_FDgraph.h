@@ -39,11 +39,26 @@ namespace GRAPH {
         graph fd_graph;
 
         std::map<FCA::BitSet, graph::vertex_descriptor> vertices;
+        std::map<FCA::BitSet, std::vector<graph::vertex_descriptor>> D; // this structure will stand for closure.
 
     public:
+
+        FDGraph() = default;
         FDGraph(const std::vector<FCA::ImplicationInd> &L);
 
+        void add_vertex(const FCA::BitSet &, const compound &);
+
+        FDGraph getEdgeEmptyCopy();
+
         std::vector<FCA::ImplicationInd> Convert();
+
+        FDGraph Closure();
+
+        graph &getGraph() { return fd_graph; };
+        const graph &getGraph() const { return fd_graph; } ;
+
+        std::map<FCA::BitSet, graph::vertex_descriptor> &getVerticesMap() { return vertices; };
+        const std::map<FCA::BitSet, graph::vertex_descriptor> &getVerticesMap() const { return vertices; };
 
     };
 

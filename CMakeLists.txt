@@ -33,6 +33,8 @@ set(Boost_USE_STATIC_LIBS ON)
 
 message(WARNING "Pouet ${PROJECT_SOURCE_DIR}")
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
+
 find_package(Boost REQUIRED)
 if (Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIR})
