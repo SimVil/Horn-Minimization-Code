@@ -61,25 +61,6 @@ GRAPH::FDGraph::FDGraph(const std::vector<FCA::ImplicationInd> &L) { // L is not
 }
 
 
-void GRAPH::FDGraph::add_vertex(const FCA::BitSet &label, const compound &prop)
-{
-    vertices[label] = boost::add_vertex(prop, fd_graph);
-}
-
-GRAPH::FDGraph GRAPH::FDGraph::getEdgeEmptyCopy()
-{
-    GRAPH::FDGraph other;
-    std::map<FCA::BitSet, graph::vertex_descriptor>::iterator it;
-
-    for(it = vertices.begin(); it != vertices.end(); ++it)
-    {
-        other.add_vertex(it->first, compound(fd_graph[it->second].is_compound, fd_graph[it->second].label));
-    }
-
-    return other;
-}
-
-
 std::vector<FCA::ImplicationInd> GRAPH::FDGraph::Convert() {
     std::vector<FCA::ImplicationInd> L;
     if (vertices.empty())
@@ -129,46 +110,50 @@ std::vector<FCA::ImplicationInd> GRAPH::FDGraph::Convert() {
 
 }
 
-GRAPH::FDGraph GRAPH::FDGraph::Closure()
-{
-    FDGraph closure = getEdgeEmptyCopy();
-    graph closure_fdgraph = closure.getGraph();
-    boost::graph_traits<graph>::vertex_iterator node_b, node_e, node_it;
-    boost::graph_traits<graph>::vertex_iterator c_node_b, c_node_e, c_node_it;
-    std::map<FCA::BitSet, int> q_counters;
-    FCA::BitSet i_node;
-    FCA::BitSet m_node;
+//GRAPH::FDGraph GRAPH::FDGraph::Closure() {
+//    return GRAPH::FDGraph();
+//}
 
-    boost::tie(node_b, node_e) = boost::vertices(fd_graph);
-
-    for(node_it = node_b; node_b != node_e; node_b = node_it)
-    {
-        ++node_it;
-        if(boost::out_degree(*node_b, fd_graph) > 0)
-        {
-            i_node = fd_graph[*node_b].label;
-
-            if (fd_graph[*node_b].label.count() <= 1) // node i simple
-            {
-                for(c_node_it = c_node_b; c_node_b != c_node_e; c_node_b = c_node_it)
-                {
-                    ++c_node_it;
-                    m_node = fd_graph[*c_node_b].label;
-
-                    if(m_node.count() > 1)
-                        // implicit cast of bool to int for initializing counters
-                        q_counters[m_node] = std::find(D[i_node].begin(), D[i_node].end(), *c_node_b) != D[i_node].end();
-                }
-            }
-
-            // Li0+ = 0, Li1+ = 0
-            boost::clear_out_edges(*node_b, closure_fdgraph);
-
-            if(i_node.count() > 1)
-                // NodeClosure(node_b, )
-        }
-
-    }
-
-    return closure;
-}
+//GRAPH::FDGraph GRAPH::FDGraph::Closure()
+//{
+//    FDGraph closure = getEdgeEmptyCopy();
+//    graph closure_fdgraph = closure.getGraph();
+//    boost::graph_traits<graph>::vertex_iterator node_b, node_e, node_it;
+//    boost::graph_traits<graph>::vertex_iterator c_node_b, c_node_e, c_node_it;
+//    std::map<FCA::BitSet, int> q_counters;
+//    FCA::BitSet i_node;
+//    FCA::BitSet m_node;
+//
+//    boost::tie(node_b, node_e) = boost::vertices(fd_graph);
+//
+//    for(node_it = node_b; node_b != node_e; node_b = node_it)
+//    {
+//        ++node_it;
+//        if(boost::out_degree(*node_b, fd_graph) > 0)
+//        {
+//            i_node = fd_graph[*node_b].label;
+//
+//            if (fd_graph[*node_b].label.count() <= 1) // node i simple
+//            {
+//                for(c_node_it = c_node_b; c_node_b != c_node_e; c_node_b = c_node_it)
+//                {
+//                    ++c_node_it;
+//                    m_node = fd_graph[*c_node_b].label;
+//
+//                    if(m_node.count() > 1)
+//                        // implicit cast of bool to int for initializing counters
+//                        q_counters[m_node] = std::find(D[i_node].begin(), D[i_node].end(), *c_node_b) != D[i_node].end();
+//                }
+//            }
+//
+//            // Li0+ = 0, Li1+ = 0
+//            boost::clear_out_edges(*node_b, closure_fdgraph);
+//
+//            if(i_node.count() > 1)
+//                // NodeClosure(node_b, )
+//        }
+//
+//    }
+//
+//    return closure;
+//}

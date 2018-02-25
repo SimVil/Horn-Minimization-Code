@@ -8,6 +8,7 @@
 #include "Tester.h"
 #include "../../CanonicalBasis/horn_berczi.h"
 
+/// \class Berczi-adapted tester.
 class BercziTester: public Tester {
 public:
     void BuildingSequence(std::vector<std::vector<FCA::Implication>> &buff,

@@ -44,15 +44,15 @@ namespace GRAPH {
     public:
 
         FDGraph() = default;
-        FDGraph(const std::vector<FCA::ImplicationInd> &L);
+        explicit FDGraph(const std::vector<FCA::ImplicationInd> &L);
 
-        void add_vertex(const FCA::BitSet &, const compound &);
+        //void add_vertex(const FCA::BitSet &, const compound &);
 
-        FDGraph getEdgeEmptyCopy();
+        //FDGraph getEdgeEmptyCopy();
 
         std::vector<FCA::ImplicationInd> Convert();
 
-        FDGraph Closure();
+       //FDGraph Closure();
 
         graph &getGraph() { return fd_graph; };
         const graph &getGraph() const { return fd_graph; } ;
