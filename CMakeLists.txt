@@ -15,15 +15,19 @@ set(CMAKE_CXX_STANDARD 11)
 
 # ==== Files to handle ==== #
 # CanonicalBasis/ contains all algorithms .h and .cpp
+# we must change, using file for gathering is deprecated by the doc
+# try to use list instead
 include_directories(CanonicalBasis)
 file(GLOB ALGO_HEADER "CanonicalBasis/*.h")
 file(GLOB ALGO_CODE "CanonicalBasis/*.cpp")
 
 # Tests/ contains unit testing interfaces and mains.
 include_directories(Tests)
-file(GLOB TEST_INTERFACE "Tests/Tester/Tester.cpp Tests/Tester/Tester.h")
-file(GLOB TEST_MAIER "Tests/Tester/TestMaier.cpp Tests/Tester/TestMaier.h")
-file(GLOB TEST_BERCZI "Tests/Tester/TestBerczi.cpp Tests/Tester/TestBerczi.h")
+list(APPEND TEST_INTERFACE Tests/Testers/Tester.cpp Tests/Testers/Tester.h)
+list(APPEND TEST_MAIER Tests/Testers/MaierTester.cpp Tests/Testers/MaierTester.h)
+list(APPEND TEST_BERCZI Tests/Testers/BercziTester.cpp Tests/Testers/BercziTester.h)
+
+message(WARNING "${TEST_INTERFACE}")
 
 
 # ==== Boost settings ==== #
@@ -31,7 +35,7 @@ set(BOOST_ROOT "${PROJECT_SOURCE_DIR}/boost")
 set(BOOST_LIBRARYDIR "${BOOST_ROOT}/lib")
 set(Boost_USE_STATIC_LIBS ON)
 
-message(WARNING "Pouet ${PROJECT_SOURCE_DIR}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 
 find_package(Boost REQUIRED)
 if (Boost_FOUND)

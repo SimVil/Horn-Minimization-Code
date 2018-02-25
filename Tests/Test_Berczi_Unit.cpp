@@ -18,7 +18,6 @@
 #include "../catch.h"
 #include "../CanonicalBasis/horn_berczi.h"
 #include "Testers/BercziTester.h"
-#include <gperftools/profiler.h>
 
 
 /// \brief Test of empty basis.
@@ -42,7 +41,6 @@ TEST_CASE("Berczi Algorithm: empty basis")
 TEST_CASE("Berczi Algorithm: Non-empty basis")
 {
 
-    ProfilerStart("/home/simon/share/Algorithms/out.prof");
     std::string root = "/home/simon/share/Algorithms/Tests/";
     BercziTester tester;
 
@@ -59,6 +57,5 @@ TEST_CASE("Berczi Algorithm: Non-empty basis")
         tester.Test(testcases, filenames, root);
     }
 
-    ProfilerStop();
 }
 

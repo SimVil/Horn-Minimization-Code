@@ -9,8 +9,8 @@
 #define ALGORITHMS_HORN_MAIER_H
 
 #include <vector>
-#include "fca_datastructures.h"
-#include "fca_closure_operators.h"
+#include "fca_implications.h"
+#include "fca_linclosure.h"
 
 namespace HORN {
 

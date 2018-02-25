@@ -2,6 +2,7 @@
 #include <vector>
 #include "CanonicalBasis/test_functions.h"
 #include "CanonicalBasis/graph_FDgraph.h"
+#include <time.h>
 // #include <boost/timer/timer.hpp>
 
 // #include <gperftools/profiler.h>
@@ -11,6 +12,8 @@ int main(int, char **) {
 
     size_t implNum = 4;
     size_t attrNum = 5;
+
+    srand(time(NULL));
 
     std::vector<std::string> sigma = {"a", "b", "c", "d", "e"};
     std::vector<FCA::ImplicationInd> L(implNum);

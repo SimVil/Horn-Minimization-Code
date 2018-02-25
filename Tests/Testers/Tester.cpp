@@ -8,20 +8,21 @@
 #include <boost/algorithm/string/trim.hpp>
 
 
+/// Performs a list of tests out of test files.
 void Tester::TestingSequence(const std::string &path, const std::string &extension,
                              const std::vector<std::string> &filenames, const unsigned &tests_nb)
 {
     unsigned long seq_len = filenames.size();
     std::vector<std::string> buffer(seq_len);
     std::vector<std::vector<FCA::Implication>> basis(seq_len);
-    std::vector<FCA::Attribute> sigma_s;
-    std::vector<FCA::ImplicationInd> L;
-    std::vector<FCA::ImplicationInd> minL;
-    std::vector<std::vector<FCA::Implication>> buffL;
-    FCA::BitSet sigma;
+    std::vector<FCA::Attribute> sigma_s; // attribute set
+    std::vector<FCA::ImplicationInd> L; // input basis
+    std::vector<std::vector<FCA::Implication>> buffL; // result buffers
+    FCA::BitSet sigma; // bitset attribute set
 
     for(int i = 1; i <= tests_nb; ++i)
     {
+        // formatting file names
         for(int j = 0; j < seq_len; ++j)
         {
             buffer[j] = path;
@@ -31,13 +32,16 @@ void Tester::TestingSequence(const std::string &path, const std::string &extensi
             buffer[j] += extension;
         }
 
+        // read the files defined by buffer
         Tester::ReadingSequence(buffer, basis, sigma_s);
         FCA::Convert(sigma_s, sigma_s, basis[0], sigma, L);
 
         BuildingSequence(buffL, L, sigma_s);
 
+        // removing the input file, we must have exactly seq_len - 1 results to test.
         REQUIRE(buffL.size() == seq_len - 1);
 
+        // preforming equivalence test between results and expectations
         for(int k = 0; k < buffL.size(); ++k)
         {
             REQUIRE(IsVectorOfImplicationsIdentical(buffL[k], basis[k + 1]));
@@ -55,7 +59,7 @@ void Tester::TestingSequence(const std::string &path, const std::string &extensi
     }
 }
 
-
+/// special case of empty strings.
 void Tester::HandleEmpty(std::vector<FCA::Attribute> &set) {
     if (set.size() == 1 && set[0].empty())
     {
@@ -63,6 +67,7 @@ void Tester::HandleEmpty(std::vector<FCA::Attribute> &set) {
     }
 }
 
+/// read an implication base into a text file.
 void Tester::ReadImplicationFile(const std::string &filename, std::vector<FCA::Attribute> &sigma,
                                  std::vector<FCA::Implication> &basis)
 {
@@ -74,10 +79,14 @@ void Tester::ReadImplicationFile(const std::string &filename, std::vector<FCA::A
 
     if (file.is_open())
     {
+        // read attribute set
         std::getline(file, line);
         boost::trim(line);
         boost::split(sigma, line, boost::is_any_of(" "));
 
+        // read implications in the form: a b c > d
+        // we remove spaces and \r of strings to avoid noisy attributes
+        // then we convert the strings to implications
         while(std::getline(file, line))
         {
             boost::split(leftRight, line, boost::is_any_of(">"));
@@ -96,11 +105,10 @@ void Tester::ReadImplicationFile(const std::string &filename, std::vector<FCA::A
         std::cout << "Reader::ReadImplicationFile - Unable to open file" << std::endl;
     }
 
-
-
-
 }
 
+
+/// Reads a sequence of test files.
 void Tester::ReadingSequence(std::vector<std::string> &filenames, std::vector<std::vector<FCA::Implication>> &basis,
                              std::vector<FCA::Attribute> &sigma)
 {
@@ -118,7 +126,7 @@ void Tester::ReadingSequence(std::vector<std::string> &filenames, std::vector<st
 }
 
 
-
+/// General testing procedure.
 void Tester::Test(const std::vector<std::pair<std::string, unsigned int>> &testcases,
                   const std::vector<std::string> &filenames,
                   const std::string &root,

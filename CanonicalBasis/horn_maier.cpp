@@ -11,8 +11,8 @@ std::vector<FCA::ImplicationInd> HORN::redundancyElimination(const std::vector<F
     if (L.empty())
         return L;
 
-    unsigned int attrNum = L.front().Premise().size();
-    unsigned int implNum = L.size();
+    size_t attrNum = L.front().Premise().size();
+    size_t implNum = L.size();
 
     std::vector<FCA::ImplicationInd> Lirr = L;
     FCA::BitSet closure(attrNum);
@@ -21,7 +21,7 @@ std::vector<FCA::ImplicationInd> HORN::redundancyElimination(const std::vector<F
     // to keep the order of L, we pop back, and insert at
     // the beginning (circular).
 
-    for(int i = 0; i < implNum; ++i)
+    for(size_t i = 0; i < implNum; ++i)
     {
         tmp = Lirr.front();
         Lirr.erase(Lirr.begin());
@@ -44,8 +44,8 @@ void HORN::getEquivalenceMatrix(const std::vector<FCA::ImplicationInd> &L, std::
     if (L.empty())
         return;
 
-    unsigned int implNum = L.size();  // number of implications
-    unsigned int attrNum = L.front().Premise().size();  // size of attribute set
+    size_t implNum = L.size();  // number of implications
+    size_t attrNum = L.front().Premise().size();  // size of attribute set
     matrix.resize(implNum);
 
     // we will not be interested in closure: we use a stub argument.
@@ -53,7 +53,7 @@ void HORN::getEquivalenceMatrix(const std::vector<FCA::ImplicationInd> &L, std::
     FCA::BitSet tmp(attrNum);
     tmp.reset();
 
-    for(int i = 0; i < implNum; ++i)
+    for(size_t i = 0; i < implNum; ++i)
     {
         matrix[i].resize(implNum);
         matrix[i].reset();
