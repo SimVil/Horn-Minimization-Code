@@ -31,15 +31,8 @@ TEST_CASE("Main") {
     PrintImplications(std::cout, FCA::Convert(Lbis, sigma_s));
 
     g.Closure();
-    g.Convert(Lbis, "full+");
-    PrintImplications(std::cout, FCA::Convert(Lbis, sigma_s));
-
-    g.Convert(Lbis, "dotted+");
-    PrintImplications(std::cout, FCA::Convert(Lbis, sigma_s));
-
     g.RedundancyElimination();
     g.Convert(Lbis, "full");
     PrintImplications(std::cout, FCA::Convert(Lbis, sigma_s));
-
 
 }
