@@ -27,8 +27,6 @@ list(APPEND TEST_INTERFACE Tests/Testers/Tester.cpp Tests/Testers/Tester.h)
 list(APPEND TEST_MAIER Tests/Testers/MaierTester.cpp Tests/Testers/MaierTester.h)
 list(APPEND TEST_BERCZI Tests/Testers/BercziTester.cpp Tests/Testers/BercziTester.h)
 
-message(WARNING "${TEST_INTERFACE}")
-
 
 # ==== Boost settings ==== #
 set(BOOST_ROOT "${PROJECT_SOURCE_DIR}/boost")
@@ -46,11 +44,12 @@ endif()
 # ==== Targets and executables ==== #
 
 add_executable(Algorithms
+        catch.h
         main.cpp
+        ${TEST_INTERFACE}
         ${ALGO_HEADER}
         ${ALGO_CODE}
         )
-target_link_libraries(Algorithms)
 
 add_executable(TestMaier
         catch.h

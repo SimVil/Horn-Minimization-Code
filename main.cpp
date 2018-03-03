@@ -1,34 +1,45 @@
+#define CATCH_CONFIG_MAIN
+
 #include <iostream>
 #include <vector>
+#include "catch.h"
 #include "CanonicalBasis/test_functions.h"
 #include "CanonicalBasis/graph_FDgraph.h"
-#include <time.h>
+#include "Tests/Testers/Tester.h"
+#include <ctime>
 // #include <boost/timer/timer.hpp>
 
 // #include <gperftools/profiler.h>
 
 
-int main(int, char **) {
+TEST_CASE("Main") {
+//int main(int, char **) {
 
-    size_t implNum = 4;
-    size_t attrNum = 5;
+    std::vector<FCA::Attribute> sigma_s;
+    std::vector<FCA::Implication> L_s;
 
-    srand(time(NULL));
-
-    std::vector<std::string> sigma = {"a", "b", "c", "d", "e"};
-    std::vector<FCA::ImplicationInd> L(implNum);
+    FCA::BitSet sigma;
+    std::vector<FCA::ImplicationInd> L;
     std::vector<FCA::ImplicationInd> Lbis;
 
-    for(size_t i = 0; i < implNum; ++i)
-    {
-        L[i] = FCA::ImplicationInd(GetRandomBitSet(attrNum, 0.50), GetRandomBitSet(attrNum, 0.50));
-    }
+    Tester::ReadImplicationFile("D:/Documents/Courses/Master Thesis/Code/Algorithms/Tests/Standard/input_6.txt", sigma_s, L_s);
+    FCA::Convert(sigma_s, sigma_s, L_s, sigma, L);
 
-    PrintImplications(std::cout, FCA::Convert(L, sigma));
     GRAPH::FDGraph g(L);
-    Lbis = g.Convert();
+    g.Convert(Lbis);
 
-    PrintImplications(std::cout, FCA::Convert(Lbis, sigma));
-  
-    return 0;
+    PrintImplications(std::cout, FCA::Convert(Lbis, sigma_s));
+
+    g.Closure();
+    g.Convert(Lbis, "full+");
+    PrintImplications(std::cout, FCA::Convert(Lbis, sigma_s));
+
+    g.Convert(Lbis, "dotted+");
+    PrintImplications(std::cout, FCA::Convert(Lbis, sigma_s));
+
+    g.RedundancyElimination();
+    g.Convert(Lbis, "full");
+    PrintImplications(std::cout, FCA::Convert(Lbis, sigma_s));
+
+
 }

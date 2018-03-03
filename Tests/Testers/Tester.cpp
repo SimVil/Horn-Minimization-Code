@@ -20,10 +20,10 @@ void Tester::TestingSequence(const std::string &path, const std::string &extensi
     std::vector<std::vector<FCA::Implication>> buffL; // result buffers
     FCA::BitSet sigma; // bitset attribute set
 
-    for(int i = 1; i <= tests_nb; ++i)
+    for(unsigned i = 1; i <= tests_nb; ++i)
     {
         // formatting file names
-        for(int j = 0; j < seq_len; ++j)
+        for(unsigned j = 0; j < seq_len; ++j)
         {
             buffer[j] = path;
             buffer[j] += filenames[j];
@@ -42,13 +42,13 @@ void Tester::TestingSequence(const std::string &path, const std::string &extensi
         REQUIRE(buffL.size() == seq_len - 1);
 
         // preforming equivalence test between results and expectations
-        for(int k = 0; k < buffL.size(); ++k)
+        for(unsigned k = 0; k < buffL.size(); ++k)
         {
             REQUIRE(IsVectorOfImplicationsIdentical(buffL[k], basis[k + 1]));
             WARN("File: " << i);
         }
 
-        for(int j = 0; j < seq_len; ++j)
+        for(unsigned j = 0; j < seq_len; ++j)
         {
             basis[j].clear();
         }
@@ -119,7 +119,7 @@ void Tester::ReadingSequence(std::vector<std::string> &filenames, std::vector<st
         throw ("Tester::ReadingSequence: we need as much basis as files to read.");
     }
 
-    for(int i = 0; i < file_nb; ++i)
+    for(unsigned i = 0; i < file_nb; ++i)
     {
         Tester::ReadImplicationFile(filenames[i], sigma, basis[i]);
     }
@@ -134,7 +134,7 @@ void Tester::Test(const std::vector<std::pair<std::string, unsigned int>> &testc
 {
     std::string path;
     unsigned long tests_nb = testcases.size();
-    for(int i = 0; i < tests_nb; ++i)
+    for(unsigned i = 0; i < tests_nb; ++i)
     {
         SECTION(testcases[i].first)
         {
