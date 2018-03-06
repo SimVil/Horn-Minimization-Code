@@ -316,28 +316,72 @@ void GRAPH::FDGraph::Closure()
 
 
 void GRAPH::FDGraph::SuperfluousnessElimination() {
-    auto i;
+    bool superfluous;
+    bool stop;
+    int treated;
+    elt_t *sup;
+    elt_t *tmp;
+    int size;
 
-    for(i = graph.begin(); i != graph.end(); ++i)
+    // O(|V|)
+    for (auto &reset : graph) { reset.second.counter = 1; }
+
+    for(auto i = graph.begin(); i != graph.end(); ++i)
     {
-        for(auto &i_dp : i->second.edges["dotted+"])
-        {
+        sup = nullptr;
+        superfluous = false;
+        treated = 0;
+        auto j = i->second.edges["dotted+"].begin();
+        size = i->second.edges["dotted+"].size();
 
-            std::list<elt_t *> adj_v = i_dp->second.edges["full+"];
-            std::list<elt_t *> adj = i_dp->second.edges["dotted+"];
-            adj_v.splice(adj_v.end(), adj);
+        for (auto &buf : i->second.edges["dotted+"]) { buf->second.counter = 0; }
 
-            auto j = adj_v.begin();
+        // we must be sure to treat no more than |Sigma| attribute, hence we introduce
+        // counters and upper bound.
+        while(!superfluous && j != i->second.edges["dotted+"].end() && treated < size){
+            if ((*j)->second.counter == 0){
+                std::list<elt_t *> adj_v = (*j)->second.edges["full+"];
+                std::list<elt_t *> adj = (*j)->second.edges["dotted+"];
+                adj_v.splice(adj_v.end(), adj);
 
-            while(j != adj_v.end() && (*j)->first != i->first) { ++j; }
+                auto k = adj_v.begin();
 
-            // if i is superfluous
-            if (j != adj_v.end())
-            {
+                while(!superfluous && k != adj_v.end() && treated < size)
+                {
+                    if ((*k)->second.counter == 0)
+                    {
+                        superfluous = (*k)->first == i->first;
+                        (*k)->second.counter = 1;
+                        if (!superfluous) { treated ++; } else { sup = *k; }
 
-                removeEdgestoVertex(*i, {"dotted+", "full+"});
+                    }
+                    ++k;
+                }
             }
+            (*j)->second.counter = 1;
+            ++j;
         }
+
+        // if i is superfluous
+        if (superfluous)
+        {
+            for (auto &buf : i->second.edges["full+"]) { i->second.counter = 2; }
+
+            size = sup->second.edges["dotted+"].size();
+            for (int l = 0; l < size; ++l) {
+                tmp = sup->second.edges["dotted+"].front();
+                sup->second.edges["dotted+"].pop_front();
+
+                if (tmp->second.counter == 2){
+                    sup->second.edges["full+"].push_back(tmp);
+                } else {
+                    sup->second.edges["dotted+"].push_back(tmp);
+                }
+            }
+
+            removeEdgestoVertex(*i, {"dotted+", "full+"});
+         }
+
     }
 }
 
