@@ -43,6 +43,8 @@ namespace GRAPH
 
         void RedundancyElimination();
 
+        void SuperfluousnessElimination();
+
         void Convert(std::vector<FCA::ImplicationInd> &L, const std::string &type = "full");
 
         void Closure();

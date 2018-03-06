@@ -22,7 +22,7 @@ TEST_CASE("Main") {
     std::vector<FCA::ImplicationInd> L;
     std::vector<FCA::ImplicationInd> Lbis;
 
-    Tester::ReadImplicationFile("D:/Documents/Courses/Master Thesis/Code/Algorithms/Tests/Standard/input_6.txt", sigma_s, L_s);
+    Tester::ReadImplicationFile("/home/simon/share/Algorithms/Tests/Standard/input_4.txt", sigma_s, L_s);
     FCA::Convert(sigma_s, sigma_s, L_s, sigma, L);
 
     GRAPH::FDGraph g(L);
