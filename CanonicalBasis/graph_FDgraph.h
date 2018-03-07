@@ -112,6 +112,32 @@ namespace GRAPH
         /// \return a pointer on the corresponding element.
         elt_t *findVertex(const FCA::BitSet &u);
 
+        /// \brief remove superfluous nodes in the closure.
+        ///
+        /// Note: finding a superfluous node is claimed to be O(|Vc| x |V|). To reach this complexity we use the
+        /// following principle:
+        /// \code
+        ///      For each compound node i
+        ///         For each node j in the dotted closure of i
+        ///             If i is in the closure of j
+        ///                 i is superfluous
+        ///             Else
+        ///                 there is no need to go over closure of all nodes in the closure of j
+        ///
+        /// \endcode
+        ///
+        /// For the else part, here is the idea. Suppose there is a node k in the closure of j, such that i is in the
+        /// closure of k. Then by transitivity, we must have i in the closure of j. Indeed we have a dotted path [i, j],
+        /// a path [j, k], a path [k, i], but no path [j, i]. This is a contradiction. Logically speaking, it is the
+        /// contraposition of:
+        ///            {[i, j] /\ [j, k] /\ [k, i])} --> [j, i]
+        /// that is
+        ///            !{[j, i]} --> {!{[i, j]} \/ !{[j, k]} \/ !{[k, i]}}
+        /// and for this to be true, knowing that we have [i, j] and [k, i], we must not have [j, k]. Hence, if we
+        /// don't find i in the closure of j, then we won't find it in any of the node of the closure of j. That is,
+        /// to know whether i is superfluous, we would have to check at most |V| nodes.
+        void SuperfluousnessClosureElimination(std::list<std::pair<elt_t *, elt_t *>> &L);
+
     public:
 
         /// \brief default constructor;
@@ -137,30 +163,8 @@ namespace GRAPH
         /// \endcode
         void RedundancyElimination();
 
-        /// \brief remove superfluous nodes.
-        ///
-        /// Note: finding a superfluous node is claimed to be O(|Vc| x |V|). To reach this complexity we use the
-        /// following principle:
-        /// \code
-        ///      For each compound node i
-        ///         For each node j in the dotted closure of i
-        ///             If i is in the closure of j
-        ///                 i is superfluous
-        ///             Else
-        ///                 there is no need to go over closure of all nodes in the closure of j
-        ///
-        /// \endcode
-        ///
-        /// For the else part, here is the idea. Suppose there is a node k in the closure of j, such that i is in the
-        /// closure of k. Then by transitivity, we must have i in the closure of j. Indeed we have a dotted path [i, j],
-        /// a path [j, k], a path [k, i], but no path [j, i]. This is a contradiction. Logically speaking, it is the
-        /// contraposition of:
-        ///            {[i, j] /\ [j, k] /\ [k, i])} --> [j, i]
-        /// that is
-        ///            !{[j, i]} --> {!{[i, j]} \/ !{[j, k]} \/ !{[k, i]}}
-        /// and for this to be true, knowing that we have [i, j] and [k, i], we must not have [j, k]. Hence, if we
-        /// don't find i in the closure of j, then we won't find it in any of the node of the closure of j. That is,
-        /// to know whether i is superfluous, we would have to check at most |V| nodes.
+
+
         void SuperfluousnessElimination();
 
         /// \brief converts a graph to an implication basis.

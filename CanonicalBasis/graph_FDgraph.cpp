@@ -206,30 +206,74 @@ void GRAPH::FDGraph::removeEdgestoVertex(elt_t &v, const std::vector<std::string
 
 /// removes redundant nodes.
 void GRAPH::FDGraph::RedundancyElimination() {
-    std::vector<std::string> lists = {"dotted+", "full+", "D"};
+//    std::vector<std::string> lists = {"dotted+", "full+", "D"};
+//
+//    auto it = graph.begin();
+//    auto tmp;
+//
+//    bool stop = it == graph.end();
+//
+//    while(!stop)
+//    {
+//        tmp = it;
+//        ++it;
+//
+//        // setting the condition here prevents segmentation fault
+//        // because erasing an element can alter the end() iterator.
+//        // Thus, the it variable could be past the end, but not equal to the new
+//        // graph.end() after destruction of an element.
+//        stop = (it == graph.end());
+//
+//        if (tmp->first.count() != 1 && tmp->second.edges["full+"].empty())
+//        {
+//            removeEdgestoVertex(*tmp, lists);
+//            graph.erase(tmp);
+//        }
+//    }
 
     auto it = graph.begin();
     auto tmp;
-
+    elt_t *elt;
+    int size, i;
     bool stop = it == graph.end();
+    std::vector<std::string> lists = {"dotted+", "full+", "D"};
+
+    for (auto &vertex : graph)
+    {
+        vertex.second.counter = (unsigned int) (vertex.first.count() != 1 && vertex.second.edges["full+"].empty());
+    }
 
     while(!stop)
     {
         tmp = it;
         ++it;
 
-        // setting the condition here prevents segmentation fault
-        // because erasing an element can alter the end() iterator.
-        // Thus, the it variable could be past the end, but not equal to the new
-        // graph.end() after destruction of an element.
         stop = (it == graph.end());
 
-        if (tmp->first.count() != 1 && tmp->second.edges["full+"].empty())
-        {
-            removeEdgestoVertex(*tmp, lists);
+        // if the counter is 0, then tmp is not redundant and must remove redundant nodes from its arcs
+        if (!tmp->second.counter){
+            for(std::string &s : lists)
+            {
+                size = tmp->second.edges[s].size();
+                i = 0;
+                while (i < size)
+                {
+                    elt = tmp.second.edges[s].front();
+                    tmp.second.edges[s].pop_front();
+
+                    // if elt.counter is 0, the element pointed is not redundant and must be kept.
+                    if(!elt->second.counter)
+                        tmp.second.edges[s].push_back(elt);
+
+                    ++i;
+                }
+            }
+
+        } else {
             graph.erase(tmp);
         }
     }
+
 }
 
 /// converts a graph to an implication basis.
@@ -314,10 +358,8 @@ void GRAPH::FDGraph::Closure()
 
 }
 
-
-void GRAPH::FDGraph::SuperfluousnessElimination() {
+void GRAPH::FDGraph::SuperfluousnessClosureElimination(std::list<std::pair<elt_t *, elt_t *>> &L) {
     bool superfluous;
-    bool stop;
     int treated;
     elt_t *sup;
     elt_t *tmp;
@@ -365,7 +407,7 @@ void GRAPH::FDGraph::SuperfluousnessElimination() {
         // if i is superfluous
         if (superfluous)
         {
-            for (auto &buf : i->second.edges["full+"]) { i->second.counter = 2; }
+            for (auto &buf : i->second.edges["full+"]) { buf->second.counter = 2; }
 
             size = sup->second.edges["dotted+"].size();
             for (int l = 0; l < size; ++l) {
@@ -380,9 +422,48 @@ void GRAPH::FDGraph::SuperfluousnessElimination() {
             }
 
             removeEdgestoVertex(*i, {"dotted+", "full+"});
+            i->second.edges["dotted+"].clear();
+            i->second.edges["full+"].clear();
+            L.push_back(std::pair<elt_t *, elt_t *>((elt_t *) &(i->first), sup));
+
          }
 
     }
+
 }
 
+void GRAPH::FDGraph::SuperfluousnessElimination() {
+    std::list<std::pair<elt_t *, elt_t *>> L;
+    std::vector<elt_t *> final_destination(graph.size(), nullptr);
 
+    SuperfluousnessClosureElimination(L);
+
+
+    unsigned int i = 1;
+
+    // initialization  in O(|V|)
+    for (auto &it : graph)
+    {
+        it.second.counter = i;
+        ++i;
+    }
+
+    unsigned int size = L.size();
+
+    // Determine final destination in O(|V|)
+    for(i = 0; i < size; ++i)
+    {
+        std::pair<elt_t *, elt_t *> tmp_pair = L.back();
+        L.pop_back();
+
+        if (!final_destination[tmp_pair.second->second.counter - 1])
+            final_destination[tmp_pair.second->second.counter - 1] = tmp_pair.second;
+
+        final_destination[tmp_pair.first->second.counter - 1] = tmp_pair.second;
+
+        L.emplace_front(tmp_pair);
+
+    }
+
+    // move full arcs
+}
