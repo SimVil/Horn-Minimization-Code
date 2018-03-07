@@ -127,24 +127,26 @@ GRAPH::FDGraph::NodeClosure(elt_t *i, const std::list<elt_t *> &L_i, const std::
 
         i->second.edges[closure_type].push_back(j);
 
-        // we try to perform the union of edges by splicing (constant time operation)
-        // thus avoiding duplication of the next for loop.
-        std::list<elt_t *> full = j->second.edges["full"];
-        std::list<elt_t *> dotted = j->second.edges["dotted"];
-        full.splice(full.end(), dotted);
-
         // for each node k with an ingoing arc from j
         // if k is neither in the closure we are computing, nor the dotted closure
         // it must be treated, by transitivity.
-        for(auto it : full)
+
+        // default behaviour to run across full AND dotted arcs of some point
+        auto it = j->second.edges["dotted"].begin();
+
+        // if full list is not empty, we have to analyze it
+        if (!j->second.edges["full"].empty())
+            it = j->second.edges["full"].begin();
+
+        while(it != j->second.edges["dotted"].end())
         {
-            found = it->first == i->first;
+            found = (*it)->first == i->first;
             auto dotted_it = i->second.edges[dotted_closure].begin();
 
 
             while (!found && dotted_it != i->second.edges[dotted_closure].end())
             {
-                found |= (*dotted_it)->first == it->first;
+                found |= (*dotted_it)->first == (*it)->first;
                 ++dotted_it;
             }
 
@@ -155,14 +157,19 @@ GRAPH::FDGraph::NodeClosure(elt_t *i, const std::list<elt_t *> &L_i, const std::
                 auto full_it = i->second.edges[closure_type].begin();
                 while (!found && full_it != i->second.edges[closure_type].end())
                 {
-                    found |= (*full_it)->first == it->first;
+                    found |= (*full_it)->first == (*it)->first;
                     ++full_it;
                 }
             }
 
             // if k is not in any closure, we can reach it from i, and must treat
             // it later.
-            if (!found) { S_i.push_back(it); }
+            if (!found) { S_i.push_back(*it); }
+            ++it;
+
+            // we ended the full list, beginning the dotted one.
+            if (it == j->second.edges["full"].end())
+                it = j->second.edges["dotted"].begin();
         }
 
     }
@@ -206,33 +213,7 @@ void GRAPH::FDGraph::removeEdgestoVertex(elt_t &v, const std::vector<std::string
 
 /// removes redundant nodes.
 void GRAPH::FDGraph::RedundancyElimination() {
-//    std::vector<std::string> lists = {"dotted+", "full+", "D"};
-//
-//    auto it = graph.begin();
-//    auto tmp;
-//
-//    bool stop = it == graph.end();
-//
-//    while(!stop)
-//    {
-//        tmp = it;
-//        ++it;
-//
-//        // setting the condition here prevents segmentation fault
-//        // because erasing an element can alter the end() iterator.
-//        // Thus, the it variable could be past the end, but not equal to the new
-//        // graph.end() after destruction of an element.
-//        stop = (it == graph.end());
-//
-//        if (tmp->first.count() != 1 && tmp->second.edges["full+"].empty())
-//        {
-//            removeEdgestoVertex(*tmp, lists);
-//            graph.erase(tmp);
-//        }
-//    }
-
     auto it = graph.begin();
-    auto tmp;
     elt_t *elt;
     int size, i;
     bool stop = it == graph.end();
@@ -245,7 +226,7 @@ void GRAPH::FDGraph::RedundancyElimination() {
 
     while(!stop)
     {
-        tmp = it;
+        auto tmp = it;
         ++it;
 
         stop = (it == graph.end());
@@ -258,12 +239,12 @@ void GRAPH::FDGraph::RedundancyElimination() {
                 i = 0;
                 while (i < size)
                 {
-                    elt = tmp.second.edges[s].front();
-                    tmp.second.edges[s].pop_front();
+                    elt = tmp->second.edges[s].front();
+                    tmp->second.edges[s].pop_front();
 
                     // if elt.counter is 0, the element pointed is not redundant and must be kept.
                     if(!elt->second.counter)
-                        tmp.second.edges[s].push_back(elt);
+                        tmp->second.edges[s].push_back(elt);
 
                     ++i;
                 }
@@ -382,13 +363,16 @@ void GRAPH::FDGraph::SuperfluousnessClosureElimination(std::list<std::pair<elt_t
         // counters and upper bound.
         while(!superfluous && j != i->second.edges["dotted+"].end() && treated < size){
             if ((*j)->second.counter == 0){
-                std::list<elt_t *> adj_v = (*j)->second.edges["full+"];
-                std::list<elt_t *> adj = (*j)->second.edges["dotted+"];
-                adj_v.splice(adj_v.end(), adj);
 
-                auto k = adj_v.begin();
+                // default behavior
+                auto k = (*j)->second.edges["dotted+"].begin();
 
-                while(!superfluous && k != adj_v.end() && treated < size)
+                // full+ may be empty only if j is a simple node without outgoing arcs
+                if (!(*j)->second.edges["full+"].empty())
+                    k = (*j)->second.edges["full+"].begin();
+
+
+                while(!superfluous && k != (*j)->second.edges["dotted+"].end() && treated < size)
                 {
                     if ((*k)->second.counter == 0)
                     {
@@ -398,6 +382,11 @@ void GRAPH::FDGraph::SuperfluousnessClosureElimination(std::list<std::pair<elt_t
 
                     }
                     ++k;
+
+                    // change of lists. If we finished the first one, we jump to the second one
+                    // they are disjoint (closure).
+                    if (k == (*j)->second.edges["full+"].end())
+                        k = (*j)->second.edges["dotted+"].begin();
                 }
             }
             (*j)->second.counter = 1;
@@ -424,7 +413,7 @@ void GRAPH::FDGraph::SuperfluousnessClosureElimination(std::list<std::pair<elt_t
             removeEdgestoVertex(*i, {"dotted+", "full+"});
             i->second.edges["dotted+"].clear();
             i->second.edges["full+"].clear();
-            L.push_back(std::pair<elt_t *, elt_t *>((elt_t *) &(i->first), sup));
+            L.emplace_back(std::pair<elt_t *, elt_t *>((elt_t *) &(i->first), sup));
 
          }
 
