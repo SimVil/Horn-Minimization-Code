@@ -22,7 +22,7 @@ TEST_CASE("Main") {
     std::vector<FCA::ImplicationInd> L;
     std::vector<FCA::ImplicationInd> Lbis;
 
-    Tester::ReadImplicationFile("D:/Documents/Courses/Master Thesis/Code/Algorithms/Tests/Standard/input_3.txt", sigma_s, L_s);
+    Tester::ReadImplicationFile("D:/Documents/Courses/Master Thesis/Code/Algorithms/Tests/Standard/input_5.txt", sigma_s, L_s);
     FCA::Convert(sigma_s, sigma_s, L_s, sigma, L);
 
     GRAPH::FDGraph g(L);
@@ -31,7 +31,15 @@ TEST_CASE("Main") {
     PrintImplications(std::cout, FCA::Convert(Lbis, sigma_s));
 
     g.Closure();
+    g.Convert(Lbis, "full+");
+    PrintImplications(std::cout, FCA::Convert(Lbis, sigma_s));
+    g.Convert(Lbis, "dotted+");
+    PrintImplications(std::cout, FCA::Convert(Lbis, sigma_s));
     g.RedundancyElimination();
+    g.Convert(Lbis, "full");
+    PrintImplications(std::cout, FCA::Convert(Lbis, sigma_s));
+
+    g.SuperfluousnessElimination();
     g.Convert(Lbis, "full");
     PrintImplications(std::cout, FCA::Convert(Lbis, sigma_s));
 
