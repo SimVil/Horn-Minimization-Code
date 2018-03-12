@@ -1,0 +1,5 @@
+a b c d
+a b > d
+b c > d
+a > c
+c > a

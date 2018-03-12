@@ -248,6 +248,9 @@ void GRAPH::FDGraph::RedundancyElimination() {
                 }
             }
 
+        } else {
+            v.second.edges["dotted+"].clear();
+            v.second.edges["full+"].clear();
         }
     }
 
