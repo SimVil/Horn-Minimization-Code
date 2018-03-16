@@ -1,9 +1,7 @@
 #include <iostream>
 #include <vector>
 #include "CanonicalBasis/test_functions.h"
-#include "CanonicalBasis/graph_FDgraph.h"
-#include <time.h>
-// #include <boost/timer/timer.hpp>
+#include <boost/timer/timer.hpp>
 
 // #include <gperftools/profiler.h>
 
@@ -24,11 +22,16 @@ int main(int, char **) {
         L[i] = FCA::ImplicationInd(GetRandomBitSet(attrNum, 0.50), GetRandomBitSet(attrNum, 0.50));
     }
 
-    PrintImplications(std::cout, FCA::Convert(L, sigma));
-    GRAPH::FDGraph g(L);
-    Lbis = g.Convert();
+    FCA::BitSet pouet = GetRandomBitSet(100, 0.5);
+    boost::timer::auto_cpu_timer t;
 
-    PrintImplications(std::cout, FCA::Convert(Lbis, sigma));
+    for(unsigned long j = 0; j < 10000000; ++j)
+    {
+        pouet.test(0);
+    }
+
+    //std::cout << L.front().Premise().to_ulong() << std::endl;
+    //PrintImplications(std::cout, FCA::Convert(L, sigma));
   
     return 0;
 }

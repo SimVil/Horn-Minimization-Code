@@ -5,10 +5,18 @@
 #ifndef ALGORITHMS_HORN_LECTIC_H
 #define ALGORITHMS_HORN_LECTIC_H
 
+#include <vector>
+#include "fca_implications.h"
+#include "fca_linclosure.h"
 
-class horn_lectic {
 
-};
+namespace HORN {
 
+    bool LecticComp(FCA::ImplicationInd I_1, FCA::ImplicationInd I_2);
+
+    void LecticMinimization(const std::vector<FCA::ImplicationInd> &L, std::vector<FCA::ImplicationInd> &Lc);
+
+
+}
 
 #endif //ALGORITHMS_HORN_LECTIC_H
