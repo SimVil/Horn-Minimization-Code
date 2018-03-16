@@ -24,7 +24,7 @@ GRAPH::FDGraph::FDGraph(const std::vector<FCA::ImplicationInd> &L) {
     for (size_t i = 0; i < attrNum; ++i)
     {
         vertex.set(i);
-        graph.emplace_back(elt_t(vertex, vertex_t()));
+        graph.emplace_back(elt_t(vertex, vertex_t(i)));
         simple_vertex[i] = &graph.back();
         vertex.reset();
     }

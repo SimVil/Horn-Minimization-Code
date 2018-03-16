@@ -47,7 +47,7 @@ TEST_CASE("Main") {
 
 
 
-    Tester::ReadImplicationFile("D:/Documents/Courses/Master Thesis/Code/Algorithms/Tests/Standard/input_8.txt", sigma_s, L_s);
+    Tester::ReadImplicationFile("D:/Documents/Courses/Master Thesis/Code/Algorithms/Tests/Standard/input_4.txt", sigma_s, L_s);
     FCA::Convert(sigma_s, sigma_s, L_s, sigma, L);
 
     GRAPH::FDGraph g(L);
