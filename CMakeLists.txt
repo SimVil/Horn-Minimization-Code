@@ -33,6 +33,7 @@ set(BOOST_ROOT "${PROJECT_SOURCE_DIR}/boost")
 set(BOOST_LIBRARYDIR "${BOOST_ROOT}/lib")
 set(Boost_USE_STATIC_LIBS ON)
 
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 
 find_package(Boost REQUIRED)
@@ -49,7 +50,17 @@ add_executable(Algorithms
         ${TEST_INTERFACE}
         ${ALGO_HEADER}
         ${ALGO_CODE}
-        )
+)
+
+target_link_libraries(Algorithms
+        ${BOOST_LIBRARYDIR}/libboost_timer-mgw63-mt-s-x32-1_66.a
+        ${BOOST_LIBRARYDIR}/libboost_system-mgw63-mt-s-x32-1_66.a
+        ${BOOST_LIBRARYDIR}/libboost_chrono-mgw63-mt-s-x32-1_66.a)
+
+#target_link_libraries(Algorithms
+#        ${BOOST_LIBRARYDIR}/libboost_timer-mgw63-mt-s-x32-1_66.a
+#        ${BOOST_LIBRARYDIR}/libboost_system-mgw63-mt-s-x32-1_66.a
+#        ${BOOST_LIBRARYDIR}/libboost_chrono-mgw63-mt-s-x32-1_66.a)
 
 add_executable(TestMaier
         catch.h
