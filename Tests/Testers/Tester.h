@@ -88,8 +88,6 @@ public:
               const std::string &extension = ".txt"
             );
 
-protected:
-
     /// \brief read an implication base into a text file.
     ///
     /// \param filename
@@ -97,6 +95,9 @@ protected:
     /// \param basis basis read in the file.
     static void ReadImplicationFile(const std::string &filename, std::vector<FCA::Attribute> &sigma,
                                     std::vector<FCA::Implication> &basis);
+
+protected:
+
 
     /// \brief special case of empty strings.
     ///
