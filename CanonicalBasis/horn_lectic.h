@@ -12,7 +12,9 @@
 
 namespace HORN {
 
-    bool LecticComp(FCA::ImplicationInd I_1, FCA::ImplicationInd I_2);
+    bool SizeComp(const FCA::ImplicationInd &I_1, const FCA::ImplicationInd &I_2);
+
+    bool InclusionComp(const FCA::ImplicationInd &I_1, const FCA::ImplicationInd &I_2);
 
     void LecticMinimization(const std::vector<FCA::ImplicationInd> &L, std::vector<FCA::ImplicationInd> &Lc);
 
