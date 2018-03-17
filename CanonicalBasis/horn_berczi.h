@@ -39,7 +39,9 @@ namespace HORN
     ///
     /// \param L [in] the basis to minimize.
     /// \return the Duquenne-Guigues basis of L.
-    std::vector<FCA::ImplicationInd> BercziMinimization(const std::vector<FCA::ImplicationInd> &L);
+    void BercziMinimization(const std::vector<FCA::ImplicationInd> &L, std::vector<FCA::ImplicationInd> &Lc);
+
+    void BodyBercziMinimization(const std::vector<FCA::ImplicationInd> &L, std::vector<FCA::ImplicationInd> &Lc);
 
 }
 
