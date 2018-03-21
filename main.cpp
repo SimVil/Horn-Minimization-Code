@@ -7,6 +7,7 @@
 #include "CanonicalBasis/horn_maier.h"
 #include "CanonicalBasis/horn_berczi.h"
 #include "CanonicalBasis/horn_lectic.h"
+#include "CanonicalBasis/horn_shock.h"
 #include "CanonicalBasis/fca_minimization.h"
 #include "Tests/Testers/Tester.h"
 #include <ctime>
@@ -19,7 +20,7 @@ TEST_CASE("Main") {
 //int main(int, char **) {
 
     unsigned attrNum = 10;
-    unsigned implNum = 30;
+    unsigned implNum = 10;
 
     srand((unsigned) time(nullptr));
     std::vector<FCA::Attribute> sigma_s = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j"};
@@ -31,26 +32,26 @@ TEST_CASE("Main") {
     std::vector<FCA::ImplicationInd> Lbis;
 
     std::cout << (1 << attrNum) - 1 << std::endl;
-
-    for (unsigned i = 0; i < implNum; ++i)
-    {
-        do {
-            conclusion = GetRandomBitSet(attrNum, 0.2);
-        } while (conclusion.none() || conclusion.count() == (unsigned) (1 << attrNum) - 1);
-
-        do {
-            premise = GetRandomBitSet(attrNum, 0.5) - conclusion;
-        } while (premise.none());
-
-        L.emplace_back(FCA::ImplicationInd(premise, conclusion));
-
-    }
+//
+//    for (unsigned i = 0; i < implNum; ++i)
+//    {
+//        do {
+//            conclusion = GetRandomBitSet(attrNum, 0.2);
+//        } while (conclusion.none() || conclusion.count() == (unsigned) (1 << attrNum) - 1);
+//
+//        do {
+//            premise = GetRandomBitSet(attrNum, 0.5) - conclusion;
+//        } while (premise.none());
+//
+//        L.emplace_back(FCA::ImplicationInd(premise, conclusion));
+//
+//    }
 
     boost::timer::auto_cpu_timer t;
 
 
-//    Tester::ReadImplicationFile("D:/Documents/Courses/Master Thesis/Code/Algorithms/Tests/Standard/input_8.txt", sigma_s, L_s);
-//    FCA::Convert(sigma_s, sigma_s, L_s, sigma, L);
+    Tester::ReadImplicationFile("D:/Documents/Courses/Master Thesis/Code/Algorithms/Tests/Standard/input_3.txt", sigma_s, L_s);
+    FCA::Convert(sigma_s, sigma_s, L_s, sigma, L);
 
     PrintImplications(std::cout, FCA::Convert(L, sigma_s));
 
@@ -72,8 +73,8 @@ TEST_CASE("Main") {
     HORN::BercziMinimization(L, Lbis);
     PrintImplications(std::cout, FCA::Convert(Lbis, sigma_s));
 
-    std::cout << std::endl << "Berczi body Result" << std::endl;
-    HORN::BodyBercziMinimization(L, Lbis);
+    std::cout << std::endl << "Shock result" << std::endl;
+    HORN::ShockMinimization(L, Lbis);
     PrintImplications(std::cout, FCA::Convert(Lbis, sigma_s));
 
     Lbis.clear();

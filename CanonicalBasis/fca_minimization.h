@@ -6,6 +6,7 @@
 # include <vector>
 
 # include "fca_datastructures.h"
+# include "fca_linclosure.h"
 
 namespace FCA
 {
