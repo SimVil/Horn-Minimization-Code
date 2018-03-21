@@ -57,7 +57,8 @@ std::vector<FCA::ImplicationInd> FCA::MinimalCover(const std::vector<FCA::Implic
     {
         ImplicationInd impl = tmp[implCur];		
 
-        LinClosureImproved::Apply(impl.Conclusion(), tmp, list, prevImplSetSize, impl.Conclusion());
+        //LinClosureImproved::Apply(impl.Conclusion(), tmp, list, prevImplSetSize, impl.Conclusion());
+        LinClosure::Apply(impl.Conclusion(), tmp, impl.Conclusion());
         tmp[implCur] = impl;
     }
 

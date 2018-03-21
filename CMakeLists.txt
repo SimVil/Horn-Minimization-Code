@@ -50,7 +50,7 @@ add_executable(Algorithms
         ${TEST_INTERFACE}
         ${ALGO_HEADER}
         ${ALGO_CODE}
-)
+		CanonicalBasis/horn_shock.cpp CanonicalBasis/horn_shock.h)
 
 target_link_libraries(Algorithms
         ${BOOST_LIBRARYDIR}/libboost_timer-mgw63-mt-s-x32-1_66.a
