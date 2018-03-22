@@ -9,6 +9,7 @@
 #include "CanonicalBasis/horn_lectic.h"
 #include "CanonicalBasis/horn_shock.h"
 #include "CanonicalBasis/fca_minimization.h"
+#include "CanonicalBasis/horn_afp.h"
 #include "Tests/Testers/Tester.h"
 #include <ctime>
 #include <boost/timer/timer.hpp>
@@ -50,7 +51,7 @@ TEST_CASE("Main") {
     boost::timer::auto_cpu_timer t;
 
 
-    Tester::ReadImplicationFile("D:/Documents/Courses/Master Thesis/Code/Algorithms/Tests/Standard/input_3.txt", sigma_s, L_s);
+    Tester::ReadImplicationFile("D:/Documents/Courses/Master Thesis/Code/Algorithms/Tests/Standard/input_8.txt", sigma_s, L_s);
     FCA::Convert(sigma_s, sigma_s, L_s, sigma, L);
 
     PrintImplications(std::cout, FCA::Convert(L, sigma_s));
@@ -80,6 +81,11 @@ TEST_CASE("Main") {
     Lbis.clear();
     std::cout << std::endl << "Minimal Cover Result" << std::endl;
     Lbis = FCA::MinimalCover(L);
+    PrintImplications(std::cout, FCA::Convert(Lbis, sigma_s));
+
+    Lbis.clear();
+    std::cout << std::endl << "AFP Result" << std::endl;
+    HORN::AFPMinimization(L, Lbis);
     PrintImplications(std::cout, FCA::Convert(Lbis, sigma_s));
 
 }
