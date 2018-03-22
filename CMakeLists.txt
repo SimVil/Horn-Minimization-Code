@@ -26,6 +26,7 @@ include_directories(Tests)
 list(APPEND TEST_INTERFACE Tests/Testers/Tester.cpp Tests/Testers/Tester.h)
 list(APPEND TEST_MAIER Tests/Testers/MaierTester.cpp Tests/Testers/MaierTester.h)
 list(APPEND TEST_BERCZI Tests/Testers/BercziTester.cpp Tests/Testers/BercziTester.h)
+list(APPEND IMP_TOOLS Tests/Tools/ImplicationTools.h Tests/Tools/ImplicationTools.cpp)
 
 
 # ==== Boost settings ==== #
@@ -47,10 +48,9 @@ endif()
 add_executable(Algorithms
         catch.h
         main.cpp
-        ${TEST_INTERFACE}
+        ${IMP_TOOLS}
         ${ALGO_HEADER}
-        ${ALGO_CODE}
-		CanonicalBasis/horn_shock.cpp CanonicalBasis/horn_shock.h)
+        ${ALGO_CODE})
 
 target_link_libraries(Algorithms
         ${BOOST_LIBRARYDIR}/libboost_timer-mgw63-mt-s-x32-1_66.a
