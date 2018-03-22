@@ -23,9 +23,9 @@ file(GLOB ALGO_CODE "CanonicalBasis/*.cpp")
 
 # Tests/ contains unit testing interfaces and mains.
 include_directories(Tests)
-list(APPEND TEST_INTERFACE Tests/Testers/Tester.cpp Tests/Testers/Tester.h)
-list(APPEND TEST_MAIER Tests/Testers/MaierTester.cpp Tests/Testers/MaierTester.h)
-list(APPEND TEST_BERCZI Tests/Testers/BercziTester.cpp Tests/Testers/BercziTester.h)
+list(APPEND TEST_INTERFACE Tests/UnitTesters/Tester.cpp Tests/UnitTesters/Tester.h)
+list(APPEND TEST_MAIER Tests/UnitTesters/MaierTester.cpp Tests/UnitTesters/MaierTester.h)
+list(APPEND TEST_BERCZI Tests/UnitTesters/BercziTester.cpp Tests/UnitTesters/BercziTester.h)
 list(APPEND IMP_TOOLS Tests/Tools/ImplicationTools.h Tests/Tools/ImplicationTools.cpp)
 
 
@@ -50,7 +50,7 @@ add_executable(Algorithms
         main.cpp
         ${IMP_TOOLS}
         ${ALGO_HEADER}
-        ${ALGO_CODE})
+        ${ALGO_CODE} Tests/Testers/GridTester.cpp Tests/Testers/GridTester.h)
 
 target_link_libraries(Algorithms
         ${BOOST_LIBRARYDIR}/libboost_timer-mgw63-mt-s-x32-1_66.a
@@ -64,7 +64,7 @@ target_link_libraries(Algorithms
 
 add_executable(TestMaier
         catch.h
-        Tests/Test_Maier_Unit.cpp
+		Tests/UnitTesters/Test_Maier_Unit.cpp
         ${TEST_INTERFACE}
 		${TEST_MAIER}
         ${ALGO_HEADER}
@@ -73,7 +73,7 @@ add_executable(TestMaier
 
 add_executable(TestBerczi
         catch.h
-		Tests/Test_Berczi_Unit.cpp
+		Tests/UnitTesters/Test_Berczi_Unit.cpp
         ${TEST_INTERFACE}
 		${TEST_BERCZI}
         ${ALGO_HEADER}

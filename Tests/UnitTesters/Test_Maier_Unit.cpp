@@ -1,8 +1,8 @@
-/// \file Test_Berczi_Unit.cpp
+/// \file Test_Maier_Unit.cpp
 /// \author Simon Vilmin.
 /// \date 2018
 ///
-/// \brief Contains a basic set of unit test cases to check correctness of Berczi Algorithm for minimization. Made with
+/// \brief Contains a basic set of unit test cases to check correctness of Maier Algorithm for minimization. Made with
 /// catch2.
 ///
 /// The code is not expected to be used in any commercial software. Its aim is to test research algorithms. As
@@ -12,12 +12,14 @@
 /// Tests are:
 ///     - empty basis
 ///     - ...
-/// Tests will split over various parts of the algorithm (see horn_berczi.h for more details).
+/// Tests will split over various parts of the algorithm (see horn_maier.h for more details).
+
+
 
 #define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
-#include "../catch.h"
-#include "../CanonicalBasis/horn_berczi.h"
-#include "Testers/BercziTester.h"
+#include "../../catch.h"
+#include "Testers/MaierTester.h"
+
 
 
 /// \brief Test of empty basis.
@@ -27,22 +29,27 @@
 ///     - Expected output:
 ///         -# irredundancy: Lc = {}
 ///         -# maier minimization:  Lc = {}
-TEST_CASE("Berczi Algorithm: empty basis")
+TEST_CASE("Maier Algorithm: empty basis")
 {
     std::vector<FCA::ImplicationInd> L;
-    std::vector<FCA::ImplicationInd> minL = HORN::BercziMinimization(L);
+    std::vector<FCA::ImplicationInd> minL = HORN::redundancyElimination(L);
     std::vector<FCA::BitSet> matrix;
+
+    CHECK(minL.empty());
+
+    HORN::getEquivalenceMatrix(L, matrix);
+
+    CHECK(matrix.empty());
+
+    minL = HORN::MaierMinimization(L);
 
     REQUIRE(minL.empty());
 }
 
 
-
-TEST_CASE("Berczi Algorithm: Non-empty basis")
-{
-
-    std::string root = "/home/simon/share/Algorithms/Tests/";
-    BercziTester tester;
+TEST_CASE("Maier Algorithm: Non-empty basis") {
+    std::string root = "D:/Documents/Courses/Master Thesis/Code/Algorithms/Tests/";
+    MaierTester tester;
 
     std::vector<std::pair<std::string, unsigned >> testcases = {
             {"Contradictions",    2},
@@ -50,12 +57,7 @@ TEST_CASE("Berczi Algorithm: Non-empty basis")
             {"NonReduced",        1},
             {"Standard",          3}};
 
-    std::vector<std::string> filenames = {"input", "DG"};
+    std::vector<std::string> filenames = {"input", "inter", "output"};
 
-    for(int i = 0; i < 1000; i++)
-    {
-        tester.Test(testcases, filenames, root);
-    }
-
+    tester.Test(testcases, filenames, root);
 }
-
