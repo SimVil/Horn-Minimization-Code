@@ -213,7 +213,7 @@ void ReadContextAndPrintDGBasisUsingProperBasis(std::istream &input, std::ofstre
     std::cout << "Impec algorithm to construct DG basis" << std::endl;
 
     properBasis = FCA::ComputeProperBasis(cntx);
-    impsBool = FCA::MinimalCover(properBasis);	
+    FCA::MinimalCover(properBasis, impsBool);
     imps = FCA::Convert(impsBool, cntx.getAttributes());
     
     PrintImplications(output, imps);
@@ -232,7 +232,7 @@ void ReadContextAndPrintDGBasisUsingMinGen1(std::istream &input, std::ofstream &
 
     mingen = FCA::MinGen1(cntx);
     std::cout << "MinGen size is " << mingen.size() << std::endl;
-    impsBool = FCA::MinimalCover(mingen);
+    FCA::MinimalCover(mingen, impsBool);
     imps = FCA::Convert(impsBool, cntx.getAttributes());
     
     PrintImplications(output, imps);
@@ -261,7 +261,8 @@ void SpeedTestUsingProperBasis(std::vector<std::string> fileNames, std::ofstream
         std::cout << "proper basis complete in " << Time(timeComputingProperBasis) << " " << properBasis.size() << " proper basis" << std::endl;
         
         timer.StartTiming();
-        std::vector<FCA::ImplicationInd> implications = FCA::MinimalCover(properBasis);											
+        std::vector<FCA::ImplicationInd> implications;
+        FCA::MinimalCover(properBasis, implications);
         timer.StopTiming();
         double timeConverting = timer.GetUserSeconds();
 
@@ -294,7 +295,8 @@ void SpeedTestUsingMinGen1(std::vector<std::string> fileNames, std::ofstream &ou
         std::cout << "mingen basis complete in " << Time(timeComputingMinGenBasis) << " " << mingenBasis.size() << " mingen basis" << std::endl;
         
         timer.StartTiming();
-        std::vector<FCA::ImplicationInd> implications = FCA::MinimalCover(mingenBasis);											
+        std::vector<FCA::ImplicationInd> implications;
+        FCA::MinimalCover(mingenBasis, implications);
         timer.StopTiming();
         double timeConverting = timer.GetUserSeconds();
 

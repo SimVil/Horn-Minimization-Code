@@ -102,9 +102,12 @@ std::vector<FCA::BitSet> HORN::getEquivalenceClasses(const std::vector<FCA::Impl
 
 
 
-std::vector<FCA::ImplicationInd> HORN::MaierMinimization(const std::vector<FCA::ImplicationInd> &L) {
+void HORN::MaierMinimization(const std::vector<FCA::ImplicationInd> &L, std::vector<FCA::ImplicationInd> &Lc) {
+
+    Lc.clear();
+
     if (L.empty())
-        return L;
+        return;
 
     // I - redundancy elimination
     std::vector<FCA::ImplicationInd> minL = HORN::redundancyElimination(L);
@@ -133,10 +136,24 @@ std::vector<FCA::ImplicationInd> HORN::MaierMinimization(const std::vector<FCA::
     // allowing indexed removal. Passing through another structure would still require some time to convert the
     // final basis back into the original vector structure.
 
+    std::vector<int> leftmoved(implNum, 0);
+    int lastmove = 0;
+
+
     for(size_t imp = 0; imp < implNum; ++imp)
     {
         e_x = 0;
         found = false;
+
+        if (imp > 0){
+            if (leftmoved[imp - 1] != -1){
+                leftmoved[imp] = leftmoved[imp - 1];
+            } else {
+                lastmove++;
+                leftmoved[imp] = lastmove;
+            }
+
+        }
 
         while(e_x < Enum && !found)
         {
@@ -156,12 +173,18 @@ std::vector<FCA::ImplicationInd> HORN::MaierMinimization(const std::vector<FCA::
             {
                 E_L[e_x].reset(imp);
                 tmpL[ddet].Conclusion() |= tmpL[imp].Conclusion();
-                minL[ddet - shift].Conclusion() |= tmpL[imp].Conclusion();
+                if (ddet > imp){
+                    minL[ddet - shift].Conclusion() |= tmpL[imp].Conclusion();
+                } else {
+                    minL[ddet - leftmoved[ddet]].Conclusion() |= tmpL[imp].Conclusion();
+                }
+
                 tmpL[imp].Conclusion().reset(); // "deleting" implication
                 tmpL[imp].Premise().reset(); // we must wait to truly remove it to keep
                                              // the sizes of E_L and minL coherent in LinClosure.
                 minL.erase(minL.begin() + imp - shift);
                 shift++;
+                leftmoved[imp] = -1;
                 ddet = -1;
 
             }
@@ -170,5 +193,5 @@ std::vector<FCA::ImplicationInd> HORN::MaierMinimization(const std::vector<FCA::
         }
     }
 
-    return minL;
+    Lc = minL;
 }

@@ -2,6 +2,7 @@
 // Created by Simon on 22/03/2018.
 //
 
+#include <horn_shock.h>
 #include "GridTester.h"
 
 int identity(int x) { return x; }
@@ -52,13 +53,26 @@ GridTester::GridTester(std::vector<std::string> keys, const std::pair<unsigned, 
 }
 
 
-void GridTester::GridSearch(const std::vector<std::string> &param) {
+GridTester::GridTester() :
+        parameters(std::map<std::string, interval> ()),
+        algos(std::map<std::string, void (*)(const theory &, theory &)> ()) {
+
+    algos["Maier"] = HORN::MaierMinimization;
+    algos["Shock"] = HORN::ShockMinimization;
+    algos["Berczi"] = HORN::BercziMinimization;
+    algos["MinCover"] = FCA::MinimalCover;
+
+
+};
+
+void GridTester::GridSearch(const std::vector<std::string> &param, std::vector<std::vector<unsigned>> &nuplets) {
 
     std::vector<unsigned> sizes;
     std::vector<unsigned> enumeration;
     std::vector<unsigned> uplet;
     std::vector<std::vector<unsigned>> ranges;
-    std::vector<std::vector<unsigned>> nuplets;
+    nuplets.clear();
+
 
     unsigned int product_size = 1;
 
@@ -78,7 +92,7 @@ void GridTester::GridSearch(const std::vector<std::string> &param) {
     while (i < product_size){
         std::fill(uplet.begin(), uplet.end(), 0);
 
-        for (int j = 0; j < enumeration.size(); ++j){
+        for (size_t j = 0; j < enumeration.size(); ++j){
             uplet[j] = ranges[j][enumeration[j]];
             std::cout << uplet[j] << " ";
         }
@@ -86,7 +100,7 @@ void GridTester::GridSearch(const std::vector<std::string> &param) {
         nuplets[i] = uplet;
         std::cout << std::endl;
 
-        for (int j = enumeration.size() - 1; j >= 0; --j){
+        for (int j = (int) enumeration.size() - 1; j >= 0; --j){
             if(j == enumeration.size() - 1){
                 enumeration[j] = (enumeration[j] + 1);
             } else {
@@ -123,5 +137,67 @@ void GridTester::setParam(const std::string &param, const std::pair<unsigned, un
 void GridTester::setParam(const std::string &param, const std::pair<unsigned, unsigned> &bounds, int (*f)(int)) {
     parameters[param].setInterval(bounds.first, bounds.second);
     parameters[param].setRangefunction(f);
+
+}
+
+
+void GridTester::PerformTestCase(std::map<std::string, unsigned> &param,
+                                 std::vector<std::string> &algnm,
+                                 std::map<std::string, double> &results) {
+
+    theory L, Lc;
+
+    std::map<std::string, boost::accumulators::accumulator_set<double,
+            boost::accumulators::stats<boost::accumulators::tag::mean,
+                    boost::accumulators::tag::min,
+                    boost::accumulators::tag::max,
+                    boost::accumulators::tag::sum,
+                    boost::accumulators::tag::moment<2>>>> acc;
+
+    for(unsigned i = 0; i < param["gen"]; ++i){
+        ImplicationTools::GenerateTheory(L, param["attrNum"], param["implNum"]);
+        //boost::timer::auto_cpu_timer gt;
+
+        std::cout << i << std::endl;
+        for (auto &s: algnm){
+            if (algos.find(s) != algos.end()){
+                boost::timer::cpu_timer t;
+                for (unsigned j = 0; j < param["repeat"]; ++j){
+                    algos[s](L, Lc);
+
+                    t.stop();
+                    Lc.clear();
+                    t.resume();
+                }
+
+                acc[s](std::stod(t.format(5, "%t")) / (double) param["repeat"]);
+            }
+
+
+        }
+
+    }
+
+    for (auto &p : acc){
+        std::cout << "TestCase: " << p.first << " (" << param["attrNum"] << ", " << param["implNum"] << ")";
+        std::cout << std::endl << "---------------------------" << std::endl << std::endl;
+        std::cout << "Mean: " << boost::accumulators::mean(acc[p.first]) << std::endl;
+        std::cout << "Min/Max: " << boost::accumulators::min(acc[p.first]) << " ";
+        std::cout <<  boost::accumulators::max(acc[p.first]) << std::endl;
+        std::cout << "Variance: " << boost::accumulators::moment<2>(acc[p.first]) << std::endl;
+        std::cout << "Sum of average times: " << boost::accumulators::sum(acc[p.first]) << std::endl;
+        std::cout << "----------------" << std::endl;
+    }
+
+
+}
+
+void GridTester::AvailableAlgos() {
+    std::cout << "Available algorithms:" << std::endl << std::endl;
+    for (auto &p : algos){
+        std::cout << p.first << " ";
+    }
+
+    std::cout << std::endl;
 
 }

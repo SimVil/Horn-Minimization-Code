@@ -2,12 +2,7 @@
 
 #include <iostream>
 #include <vector>
-#include "CanonicalBasis/test_functions.h"
-#include "CanonicalBasis/horn_maier.h"
-#include "CanonicalBasis/horn_berczi.h"
-#include "CanonicalBasis/horn_lectic.h"
-#include "CanonicalBasis/horn_shock.h"
-#include "CanonicalBasis/fca_minimization.h"
+#include "CanonicalBasis/horn_minimization_algo.h"
 #include "Tests/Tools/ImplicationTools.h"
 #include "Tests/Testers/GridTester.h"
 #include <ctime>
@@ -16,15 +11,18 @@
 // #include <gperftools/profiler.h>
 
 int main(int, char **){
-    std::pair<unsigned, unsigned> p = {1, 4};
-    std::pair<unsigned, unsigned> q = {0, 2};
-    std::pair<unsigned, unsigned> r = {8, 9};
-    std::vector<std::string> param {"x", "y", "z", "a"};
-    GridTester tester(param, q);
-    tester.GridSearch(param);
-    tester.setParam(std::vector<std::string> {"y", "a"}, q);
-    tester.setParam(std::vector<std::string> {"x", "z"}, r);
-    tester.GridSearch(param);
+    GridTester tester;
+    std::map<std::string, unsigned> p;
+    std::map<std::string, double> results;
+
+    boost::timer::auto_cpu_timer t;
+
+    p["implNum"] = 5;
+    p["attrNum"] = 4;
+    p["gen"] = 50;
+    p["repeat"] = 1;
+    std::vector<std::string> algos = {"Maier"};
+    tester.PerformTestCase(p, algos, results);
     return 0;
 }
 

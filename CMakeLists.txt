@@ -50,7 +50,7 @@ add_executable(Algorithms
         main.cpp
         ${IMP_TOOLS}
         ${ALGO_HEADER}
-        ${ALGO_CODE} Tests/Testers/GridTester.cpp Tests/Testers/GridTester.h)
+        ${ALGO_CODE} Tests/Testers/GridTester.cpp Tests/Testers/GridTester.h CanonicalBasis/horn_minimization_algo.h)
 
 target_link_libraries(Algorithms
         ${BOOST_LIBRARYDIR}/libboost_timer-mgw63-mt-s-x32-1_66.a

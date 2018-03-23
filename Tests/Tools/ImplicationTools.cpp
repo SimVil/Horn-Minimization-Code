@@ -4,6 +4,10 @@
 
 #include "ImplicationTools.h"
 
+#ifndef MAX_ITER
+#define MAX_ITER 500
+#endif
+
 
 void ImplicationTools::ReadImplication(const std::string &line, const size_t attrNum, theory &L) {
 
@@ -151,17 +155,20 @@ void ImplicationTools::GenerateTheory(theory &L, size_t attrNum, size_t implNum)
     L.clear();
     FCA::ImplicationInd tmp;
     int emptypremise = 0;
+    size_t iter;
 
     for(size_t i = 0; i < implNum; ++i){
+        iter = 0;// if we fail to generate satisfying implications, we accept the next one.
         do {
             tmp = ImplicationTools::GetRandomImplication(attrNum);
+            ++iter;
 
             // allow for only one implication with null premise
             if (emptypremise <= 1) {
                 emptypremise += (int) tmp.Premise().none();
             }
 
-        } while (emptypremise > 1 && tmp.Premise().none());
+        } while (emptypremise > 1 && tmp.Premise().none() && iter < MAX_ITER);
         L.emplace_back(tmp);
     }
 }
