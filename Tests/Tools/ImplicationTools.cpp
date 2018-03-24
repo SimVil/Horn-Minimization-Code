@@ -247,19 +247,14 @@ void ImplicationTools::Reduce(theory &L) {
 }
 
 void ImplicationTools::CloseSet(const FCA::BitSet &X, theory &L) {
-    auto it = L.begin();
-    bool stop;
 
-    do {
-        auto tmp = it;
-        ++it;
-        stop = it == L.end();
-
-        if (tmp->Premise().is_subset_of(X) && !tmp->Conclusion().is_subset_of(X)){
-            L.erase(tmp);
+    theory Lcopy = L;
+    L.clear();
+    for (auto &it : Lcopy){
+        if (it.Premise().is_subset_of(X) && !it.Conclusion().is_subset_of(X)){
+            L.emplace_back(it);
         }
-
-    } while (!stop);
+    }
 
 }
 

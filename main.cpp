@@ -12,17 +12,17 @@
 
 int main(int, char **){
     GridTester tester;
-    std::map<std::string, unsigned> p;
-    std::map<std::string, double> results;
+    std::pair<unsigned, unsigned> size_space(10, 20);
+    std::pair<unsigned, unsigned> gen_space(20, 20);
+    std::pair<unsigned, unsigned> rep_space(20, 20);
 
-    boost::timer::auto_cpu_timer t;
+    tester.setParam(std::vector<std::string> {"implNum", "attrNum"}, size_space);
+    tester.setParam("gen", gen_space);
+    tester.setParam("repeat", rep_space);
 
-    p["implNum"] = 5;
-    p["attrNum"] = 4;
-    p["gen"] = 50;
-    p["repeat"] = 1;
-    std::vector<std::string> algos = {"Maier"};
-    tester.PerformTestCase(p, algos, results);
+    std::vector<std::string> algos = {"Maier", "MinCover"};
+    tester.GridTest({"implNum", "attrNum", "gen", "repeat"}, algos);
+
     return 0;
 }
 

@@ -26,6 +26,29 @@
 typedef std::pair<unsigned, unsigned> bounds;
 typedef std::vector<FCA::ImplicationInd> theory;
 
+typedef boost::accumulators::stats<boost::accumulators::tag::mean,
+        boost::accumulators::tag::min,
+        boost::accumulators::tag::max,
+        boost::accumulators::tag::sum,
+        boost::accumulators::tag::moment<2>> metrics;
+
+typedef boost::accumulators::accumulator_set<double, metrics> statistics;
+
+typedef struct result result_t;
+
+struct result {
+    unsigned implNum, attrNum;
+    unsigned gen, repeat;
+    double mean, min_t, max_t, var_t;
+
+    result(std::map<std::string, unsigned> &tparam, statistics &tres);
+    result() = default;
+
+};
+
+void displayTestCase(std::vector<std::string> names, unsigned implNum, unsigned attrNum, unsigned gen);
+
+
 
 class interval {
 protected:
@@ -43,12 +66,15 @@ public:
     void getRange( std::vector<unsigned> &range);
 };
 
+
+
 class GridTester {
 protected:
     std::map<std::string, interval> parameters;
     std::map<std::string, void(*)(const theory &, theory &)> algos;
 
     void GridSearch(const std::vector<std::string> &param, std::vector<std::vector<unsigned>> &nuplets);
+    void ExportResults(std::string filename, std::list<std::map<std::string, result_t>> results);
 
 
 public:
@@ -57,14 +83,12 @@ public:
     GridTester();
 
     void PerformTestCase(std::map<std::string, unsigned> &param,
-                         std::vector<std::string> &algos,
-                         std::map<std::string, double> &results);
+                         const std::vector<std::string> &algos,
+                         std::map<std::string, result_t> &results,
+                         bool verbose = false);
 
-//    void GridTest(const std::vector<std::string> &param,
-//                  std::map<std::string, void (*)(const theory &, theory &)> &algos,
-//                  std::string *filename = nullptr,
-//                  unsigned repeat = 1000,
-//                  unsigned gen = 10);
+
+    void GridTest(const std::vector<std::string> &param, const std::vector<std::string> &algos);
 
     void setParam(const std::vector<std::string> &params, const bounds &b);
     void setParam(const std::vector<std::string> &params, const bounds &b, int (*f)(int));

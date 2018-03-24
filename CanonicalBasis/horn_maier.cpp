@@ -126,7 +126,6 @@ void HORN::MaierMinimization(const std::vector<FCA::ImplicationInd> &L, std::vec
     FCA::BitSet tmp(attrNum);
     FCA::BitSet closure(attrNum);
     int ddet = -1;
-    int shift = 0;
     bool found = false;
     size_t e_x = 0;
 
@@ -137,24 +136,19 @@ void HORN::MaierMinimization(const std::vector<FCA::ImplicationInd> &L, std::vec
     // final basis back into the original vector structure.
 
     std::vector<int> leftmoved(implNum, 0);
-    int lastmove = 0;
-
+    int shift = 0;
 
     for(size_t imp = 0; imp < implNum; ++imp)
     {
         e_x = 0;
         found = false;
 
-        if (imp > 0){
-            if (leftmoved[imp - 1] != -1){
-                leftmoved[imp] = leftmoved[imp - 1];
-            } else {
-                lastmove++;
-                leftmoved[imp] = lastmove;
-            }
+        // this imp has been moved already <shift> times (thus <shift> left steps).
+        leftmoved[imp] = shift;
 
-        }
-
+        // search for imp in equivalence classes.
+        // Once we found the eq-class e_x of imp, we check for direct determination
+        // found is for "we found the eq_class of imp".
         while(e_x < Enum && !found)
         {
             if(E_L[e_x].test(imp))

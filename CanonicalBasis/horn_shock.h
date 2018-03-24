@@ -10,6 +10,8 @@
 
 namespace HORN {
 
+    bool ReverseLecticComp(const FCA::ImplicationInd &I_1, const FCA::ImplicationInd &I_2);
+
     void ShockMinimization(const std::vector<FCA::ImplicationInd> &L, std::vector<FCA::ImplicationInd> &Lc);
 }
 
