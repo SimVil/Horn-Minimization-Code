@@ -74,7 +74,7 @@ protected:
     std::map<std::string, void(*)(const theory &, theory &)> algos;
 
     void GridSearch(const std::vector<std::string> &param, std::vector<std::vector<unsigned>> &nuplets);
-    void ExportResults(std::string filename, std::list<std::map<std::string, result_t>> results);
+    void ExportResults(std::string &filename, std::list<std::map<std::string, result_t>> results);
 
 
 public:
@@ -88,7 +88,7 @@ public:
                          bool verbose = false);
 
 
-    void GridTest(const std::vector<std::string> &param, const std::vector<std::string> &algos);
+    void GridTest(const std::vector<std::string> &param, const std::vector<std::string> &algos, std::string filename);
 
     void setParam(const std::vector<std::string> &params, const bounds &b);
     void setParam(const std::vector<std::string> &params, const bounds &b, int (*f)(int));

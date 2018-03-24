@@ -33,11 +33,13 @@ interval::interval(const unsigned i, const unsigned s) {
 void interval::getRange(std::vector<unsigned> &range) {
     range.clear();
     unsigned value = inf;
+    unsigned x = 0;
     range.emplace_back(inf);
 
-    while ((unsigned) range_function(value) < sup){
-        value++;
-        range.emplace_back((unsigned) range_function(value));
+    while ((unsigned) value + range_function(x) < sup){
+        x++;
+        value += (unsigned) range_function(x);
+        range.emplace_back((unsigned) value);
     }
 
     if (range.back() != sup){ range.emplace_back(sup); }
@@ -110,7 +112,7 @@ void GridTester::GridSearch(const std::vector<std::string> &param, std::vector<s
     nuplets.resize(product_size);
     uplet.resize(enumeration.size());
 
-    std::cout << "Generating test cases: ";
+    std::cout << "#======= Generating test cases: ";
 
     while (i < product_size){
         std::fill(uplet.begin(), uplet.end(), 0);
@@ -136,13 +138,12 @@ void GridTester::GridSearch(const std::vector<std::string> &param, std::vector<s
                     enumeration[j] = (enumeration[j] + 1);
                 }
             }
-
         }
 
         ++i;
     }
 
-    std::cout << " Done!" << std::endl;
+    std::cout << " Done!" << std::endl << std::endl;
 
 }
 
@@ -200,10 +201,8 @@ void GridTester::PerformTestCase(std::map<std::string, unsigned> &param,
                     Lc.clear();
                     t.resume();
                 }
-
                 acc[s](std::stod(t.format(5, "%t")) / (double) param["repeat"]);
             }
-
         }
 
         if (verbose){
@@ -213,10 +212,9 @@ void GridTester::PerformTestCase(std::map<std::string, unsigned> &param,
             }
 
             if ((int) percent >= 90){
-                std::cout << " Done! " << std::endl;
+                std::cout << " Done! " << std::endl << std::endl;
             }
         }
-
     }
 
     for (auto &p : acc){
@@ -237,7 +235,8 @@ void GridTester::AvailableAlgos() {
 }
 
 
-void GridTester::GridTest(const std::vector<std::string> &param, const std::vector<std::string> &algs){
+void GridTester::GridTest(const std::vector<std::string> &param, const std::vector<std::string> &algs,
+                          std::string filename){
 
     // vector dedicated to implications testing
     std::vector<std::string> thp = {"implNum", "attrNum", "gen", "repeat"};
@@ -245,7 +244,7 @@ void GridTester::GridTest(const std::vector<std::string> &param, const std::vect
     for (auto &s: param){
         assert(parameters.find(s) != parameters.end());
 
-        // 2: implication theory specific verification
+        // implication theory specific verification
         assert(std::find(thp.begin(), thp.end(), s) != thp.end());
     }
 
@@ -265,9 +264,10 @@ void GridTester::GridTest(const std::vector<std::string> &param, const std::vect
         testcase[s] = result_t();
     }
 
-    int i = 0;
+    int i = 0, j = 0;
+    int size = nuplets.size();
 
-    std::cout << "Performing test cases ======================== " << std::endl << std::endl;
+    std::cout << "##====== Performing test cases: ";
 
     for (auto &uplet : nuplets) {
 
@@ -278,16 +278,59 @@ void GridTester::GridTest(const std::vector<std::string> &param, const std::vect
         }
 
         PerformTestCase(testcaseparam, algs, testcase);
+
+        double percent = ((double) j / (double) size) * 100.;
+        if ((int) percent % 10 == 0){
+            std::cout << " " << percent << "% ";
+
+        }
+        j++;
+
         results.emplace_back(testcase);
     }
 
-    std::cout << std::endl << " ==== Done!" << std::endl;
+    std::cout << " Done!" << std::endl << std::endl;
 
-    std::cout << "Prepare for export then" << std::endl;
+    ExportResults(filename, results);
 
 }
 
 
-void GridTester::ExportResults(std::string filename, std::list<std::map<std::string, result_t>> results) {
+void GridTester::ExportResults(std::string &filename, std::list<std::map<std::string, result_t>> results) {
+    std::ofstream file(filename);
+
+    if (file.is_open()){
+
+        std::cout << "###===== Exporting to CSV file: ";
+
+        file << "Algo," << "attrNum," << "implNum," << "gen," << "repeat,";
+        file << "min," << "max," << "mean," << "var" << std::endl;
+
+        int size = results.size();
+        int j = 0;
+
+        for (auto &testcase : results){
+
+            for (auto &algo: testcase){
+                file << algo.first << ",";
+                file << algo.second.attrNum << "," << algo.second.implNum << "," << algo.second.gen  << ",";
+                file << algo.second.repeat << "," << algo.second.min_t << "," << algo.second.max_t << ",";
+                file << algo.second.mean << "," << algo.second.var_t << std::endl;
+            }
+
+            double percent = ((double) j / (double) size) * 100.;
+            if ((int) percent % 10 == 0){
+                std::cout << "==";
+
+            }
+            j++;
+        }
+
+        file.close();
+        std::cout << " Done!" << std::endl << std::endl;
+
+    } else {
+        std::cout << "GridTester::ExportResults - unable to open file: " << filename << std::endl;
+    }
 
 }
