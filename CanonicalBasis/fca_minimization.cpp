@@ -34,20 +34,20 @@ std::vector<FCA::ImplicationInd> FCA::MinimizeBasis(const std::vector<FCA::Impli
     return tmp;
 }
 
-std::vector<FCA::ImplicationInd> FCA::MinimalCover(const std::vector<FCA::ImplicationInd> &implSet)
+void FCA::MinimalCover(const std::vector<FCA::ImplicationInd> &implSet, std::vector<FCA::ImplicationInd> &Lc)
 {
+    Lc.clear();
+
     if (implSet.empty())
-    {
-        return implSet;
-    }
+        return;
 
     const size_t attrNum = implSet.front().Premise().size();
     const size_t implSetSize = implSet.size();
-    std::vector<ImplicationInd> tmp = implSet;
+    Lc = implSet;
 
     for (size_t implCur = 0; implCur < implSetSize; ++implCur)
     {
-        tmp[implCur].Conclusion() |= tmp[implCur].Premise();
+        Lc[implCur].Conclusion() |= Lc[implCur].Premise();
     }
 
     std::vector<BitSet> list(attrNum);
@@ -55,25 +55,24 @@ std::vector<FCA::ImplicationInd> FCA::MinimalCover(const std::vector<FCA::Implic
 
     for (size_t implCur = 0; implCur < implSetSize; ++implCur)
     {
-        ImplicationInd impl = tmp[implCur];		
+        ImplicationInd impl = Lc[implCur];
 
-        //LinClosureImproved::Apply(impl.Conclusion(), tmp, list, prevImplSetSize, impl.Conclusion());
-        LinClosure::Apply(impl.Conclusion(), tmp, impl.Conclusion());
-        tmp[implCur] = impl;
+        //LinClosureImproved::Apply(impl.Conclusion(), Lc, list, prevImplSetSize, impl.Conclusion());
+        LinClosure::Apply(impl.Conclusion(), Lc, impl.Conclusion());
+        Lc[implCur] = impl;
     }
 
     for (int implCur = static_cast<int>(implSetSize) - 1; implCur >= 0; --implCur)
     {
-        ImplicationInd impl = tmp[implCur];		
-        tmp[implCur] = tmp.back();
-        tmp.pop_back();
+        ImplicationInd impl = Lc[implCur];
+        Lc[implCur] = Lc.back();
+        Lc.pop_back();
 
-        Closure::Apply(impl.Premise(), tmp, impl.Premise());
+        Closure::Apply(impl.Premise(), Lc, impl.Premise());
         if (impl.Premise().is_proper_subset_of(impl.Conclusion()))
         {
-            tmp.push_back(impl);
+            Lc.push_back(impl);
         }
     }
 
-    return tmp;
 }

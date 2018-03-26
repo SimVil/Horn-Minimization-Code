@@ -81,7 +81,7 @@ namespace HORN {
     ///
     /// \param [in] L the basis to minimize.
     /// \return a minimized version of \c L.
-    std::vector<FCA::ImplicationInd> MaierMinimization(const std::vector<FCA::ImplicationInd> &L);
+    void MaierMinimization(const std::vector<FCA::ImplicationInd> &L, std::vector<FCA::ImplicationInd> &Lc);
 }
 
 #endif //ALGORITHMS_HORN_MAIER_H

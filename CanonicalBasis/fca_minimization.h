@@ -10,7 +10,7 @@
 
 namespace FCA
 {
-    std::vector<ImplicationInd> MinimalCover(const std::vector<ImplicationInd> &implSet);
+    void MinimalCover(const std::vector<ImplicationInd> &implSet, std::vector<ImplicationInd> &Lc);
 
     std::vector<ImplicationInd> MinimizeBasis(const std::vector<ImplicationInd> &implSet);
 };
