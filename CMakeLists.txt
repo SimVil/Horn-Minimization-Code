@@ -53,9 +53,9 @@ add_executable(Algorithms
         ${ALGO_CODE} Tests/Testers/GridTester.cpp Tests/Testers/GridTester.h CanonicalBasis/horn_minimization_algo.h)
 
 target_link_libraries(Algorithms
-        ${BOOST_LIBRARYDIR}/libboost_timer-mgw63-mt-s-x32-1_66.a
-        ${BOOST_LIBRARYDIR}/libboost_system-mgw63-mt-s-x32-1_66.a
-        ${BOOST_LIBRARYDIR}/libboost_chrono-mgw63-mt-s-x32-1_66.a)
+        ${BOOST_LIBRARYDIR}/libboost_timer-mgw73-mt-x64-1_66.a
+        ${BOOST_LIBRARYDIR}/libboost_system-mgw73-mt-x64-1_66.a
+        ${BOOST_LIBRARYDIR}/libboost_chrono-mgw73-mt-x64-1_66.a)
 
 #target_link_libraries(Algorithms
 #        ${BOOST_LIBRARYDIR}/libboost_timer-mgw63-mt-s-x32-1_66.a

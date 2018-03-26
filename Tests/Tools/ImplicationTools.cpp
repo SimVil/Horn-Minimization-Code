@@ -150,11 +150,11 @@ void ImplicationTools::ExpandTheory(theory &L, double growth) {
 
 }
 
-void ImplicationTools::GenerateTheory(theory &L, size_t attrNum, size_t implNum) {
+void ImplicationTools::GenerateTheory(theory &L, size_t attrNum, size_t implNum, bool closempty) {
 
     L.clear();
     FCA::ImplicationInd tmp;
-    int emptypremise = 0;
+    int emptypremise = (int) closempty;
     size_t iter;
 
     for(size_t i = 0; i < implNum; ++i){

@@ -113,14 +113,16 @@ void GridTester::GridSearch(const std::vector<std::string> &param, std::vector<s
     uplet.resize(enumeration.size());
 
     std::cout << "#======= Generating test cases: ";
+    double tenth = 0.1 * (double) product_size;
+    double percent = tenth;
 
     while (i < product_size){
         std::fill(uplet.begin(), uplet.end(), 0);
 
-        double percent = ((double) i / (double) product_size) * 100.;
-        if ((int) percent % 10 == 0){
+        percent = ((double) i / (double) product_size);
+        if (percent >= tenth){
+            tenth += tenth;
             std::cout << "==";
-
         }
 
         for (size_t j = 0; j < enumeration.size(); ++j){
@@ -186,8 +188,6 @@ void GridTester::PerformTestCase(std::map<std::string, unsigned> &param,
 
     for(unsigned i = 0; i < param["gen"]; ++i){
         ImplicationTools::GenerateTheory(L, param["attrNum"], param["implNum"]);
-        //ImplicationTools::CloseSet(emptyset, L);
-        //ImplicationTools::ExpandTheory(L, (double) (param["implNum"] - L.size()) / param["implNum"]);
 
         for (auto &s: algnm){
 
@@ -266,6 +266,8 @@ void GridTester::GridTest(const std::vector<std::string> &param, const std::vect
 
     int i = 0, j = 0;
     int size = nuplets.size();
+    double tenth = 0.1 * (double) size;
+    double percent = tenth;
 
     std::cout << "##====== Performing test cases: ";
 
@@ -279,9 +281,10 @@ void GridTester::GridTest(const std::vector<std::string> &param, const std::vect
 
         PerformTestCase(testcaseparam, algs, testcase);
 
-        double percent = ((double) j / (double) size) * 100.;
-        if ((int) percent % 10 == 0){
-            std::cout << " " << percent << "% ";
+        percent = ((double) j / (double) size);
+        if (percent >= tenth){
+            tenth += tenth;
+            std::cout << " " << percent * 100. << "% ";
 
         }
         j++;

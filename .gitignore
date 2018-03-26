@@ -32,6 +32,8 @@ boost/*
 .idea/*
 Documentation/*
 cmake-build-debug/*
+cmake-build-release/*
+Tests/CSVLogs/*
 CanonicalBasis/CanonicalBasis.*
 Doxyfile
 out.prof

@@ -32,7 +32,7 @@ namespace ImplicationTools {
 
     void ExpandTheory(theory &L, double growth);
 
-    void GenerateTheory(theory &L, size_t attrNum, size_t implNum);
+    void GenerateTheory(theory &L, size_t attrNum, size_t implNum, bool closeempty=true);
 
     void ReadImplication(const std::string &line, const size_t attrNum, theory &L);
 

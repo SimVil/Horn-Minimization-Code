@@ -31,7 +31,7 @@ bool FCA::LinClosure::Apply(const FCA::BitSet &current, const std::vector<FCA::I
             {
                 if(implied->test(implInd) && *reach == -1)
                 {
-                    *reach = implInd;
+                    *reach = (int) implInd;
                 }
                 implied->set(implInd);
             }
@@ -44,7 +44,8 @@ bool FCA::LinClosure::Apply(const FCA::BitSet &current, const std::vector<FCA::I
             }
     }
 
-    std::vector<size_t> update;	
+    std::vector<size_t> update;
+    //update.reserve(1000);
     std::vector<bool> use(attrNum, false);
 
     for (size_t i = 0; i < attrNum; ++i)
