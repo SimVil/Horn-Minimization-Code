@@ -107,24 +107,44 @@ void LinClosureHardBenchmark(const std::string &filename){
 
 int main(int, char **){
     srand((unsigned) time(nullptr));
-    GridTester tester;
-    std::pair<unsigned, unsigned> attr_space(50, 1000);
-    std::pair<unsigned, unsigned> impl_space(500, 500);
-    std::pair<unsigned, unsigned> gen_space(10, 10);
-    std::pair<unsigned, unsigned> rep_space(5, 5);
+//    GridTester tester;
+//    std::pair<unsigned, unsigned> attr_space(50, 1000);
+//    std::pair<unsigned, unsigned> impl_space(500, 500);
+//    std::pair<unsigned, unsigned> gen_space(10, 10);
+//    std::pair<unsigned, unsigned> rep_space(5, 5);
+//
+//    std::string root = "D:/Documents/Courses/Master Thesis/Code/Algorithms/Tests/CSVLogs/";
+//    std::string filename = "TripleMMB.csv";
+//
+//    tester.setParam("implNum", impl_space);
+//    tester.setParam("attrNum", attr_space, [](int){return 50;});
+//    tester.setParam("gen", gen_space);
+//    tester.setParam("repeat", rep_space);
+//
+//    std::vector<std::string> algos = {"Maier", "MinCover", "Berczi"};
+//
+//    boost::timer::auto_cpu_timer t;
+//
+//    tester.GridTest({"implNum", "attrNum", "gen", "repeat"}, algos, root + filename);
 
-    std::string root = "D:/Documents/Courses/Master Thesis/Code/Algorithms/Tests/CSVLogs/";
-    std::string filename = "TripleMMB.csv";
+    theory L, La, Lb;
+    std::string root = "D:/Documents/Courses/Master Thesis/Code/Algorithms/Tests/BitImplicationFiles/";
+    std::string filename = "imp_";
 
-    tester.setParam("implNum", impl_space);
-    tester.setParam("attrNum", attr_space, [](int){return 50;});
-    tester.setParam("gen", gen_space);
-    tester.setParam("repeat", rep_space);
+    size_t attr = 5;
+    size_t impl = 5;
+    int gen = 50;
+    for (int i = 0; i < gen; ++i){
+        ImplicationTools::GenerateTheory(L, attr, impl, true);
+        HORN::AFPMinimization(L, La);
+        FCA::MinimalCover(L, Lb);
 
-    std::vector<std::string> algos = {"Maier", "MinCover", "Berczi"};
+        if (La.size() != Lb.size()){
+            std::cout << "AFP: " << La.size() << ", " << "MinCover: " << Lb.size();
+            ImplicationTools::WriteFile(root + filename + std::to_string(i) + ".imp", L);
+        }
+    }
 
-    boost::timer::auto_cpu_timer t;
-
-    tester.GridTest({"implNum", "attrNum", "gen", "repeat"}, algos, root + filename);
+    return 0;
 }
 

@@ -156,7 +156,7 @@ void HORN::MaierMinimization(const std::vector<FCA::ImplicationInd> &L, std::vec
                 implied = E_L[e_x];
                 implied.reset(imp); // avoid direct determination to itself
                 tmp = tmpL[imp].Conclusion();
-                tmpL[imp].Conclusion().reset(); // makes a contradiction
+                tmpL[imp].Conclusion().reset(); // makes not informative implication
                 FCA::LinClosure::Apply(tmpL[imp].Premise(), tmpL, closure, 0, &implied, &ddet);
                 tmpL[imp].Conclusion() |= tmp;
                 found = true;

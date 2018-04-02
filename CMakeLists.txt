@@ -27,6 +27,7 @@ list(APPEND TEST_INTERFACE Tests/UnitTesters/Tester.cpp Tests/UnitTesters/Tester
 list(APPEND TEST_MAIER Tests/UnitTesters/MaierTester.cpp Tests/UnitTesters/MaierTester.h)
 list(APPEND TEST_BERCZI Tests/UnitTesters/BercziTester.cpp Tests/UnitTesters/BercziTester.h)
 list(APPEND IMP_TOOLS Tests/Tools/ImplicationTools.h Tests/Tools/ImplicationTools.cpp)
+list(APPEND GRID_TEST Tests/Testers/GridTester.h Tests/Testers/GridTester.cpp)
 
 
 # ==== Boost settings ==== #
@@ -49,10 +50,24 @@ add_executable(Algorithms
         catch.h
         main.cpp
         ${IMP_TOOLS}
+        ${GRID_TEST}
         ${ALGO_HEADER}
-        ${ALGO_CODE} Tests/Testers/GridTester.cpp Tests/Testers/GridTester.h CanonicalBasis/horn_minimization_algo.h)
+        ${ALGO_CODE})
+
+add_executable(Algorithms2
+        catch.h
+        main.cpp
+        ${IMP_TOOLS}
+        ${GRID_TEST}
+        ${ALGO_HEADER}
+        ${ALGO_CODE})
 
 target_link_libraries(Algorithms
+        ${BOOST_LIBRARYDIR}/libboost_timer-mgw73-mt-x64-1_66.a
+        ${BOOST_LIBRARYDIR}/libboost_system-mgw73-mt-x64-1_66.a
+        ${BOOST_LIBRARYDIR}/libboost_chrono-mgw73-mt-x64-1_66.a)
+
+target_link_libraries(Algorithms2
         ${BOOST_LIBRARYDIR}/libboost_timer-mgw73-mt-x64-1_66.a
         ${BOOST_LIBRARYDIR}/libboost_system-mgw73-mt-x64-1_66.a
         ${BOOST_LIBRARYDIR}/libboost_chrono-mgw73-mt-x64-1_66.a)
