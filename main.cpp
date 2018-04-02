@@ -104,31 +104,27 @@ void LinClosureHardBenchmark(const std::string &filename){
     file.close();
 }
 
+
 int main(int, char **){
     srand((unsigned) time(nullptr));
-//    GridTester tester;
-//    std::pair<unsigned, unsigned> attr_space(1000, 2000);
-//    std::pair<unsigned, unsigned> impl_space(50, 150);
-//    std::pair<unsigned, unsigned> gen_space(20, 20);
-//    std::pair<unsigned, unsigned> rep_space(5, 5);
-//
+    GridTester tester;
+    std::pair<unsigned, unsigned> attr_space(50, 1000);
+    std::pair<unsigned, unsigned> impl_space(500, 500);
+    std::pair<unsigned, unsigned> gen_space(10, 10);
+    std::pair<unsigned, unsigned> rep_space(5, 5);
+
     std::string root = "D:/Documents/Courses/Master Thesis/Code/Algorithms/Tests/CSVLogs/";
-    std::string filename = "LinClosure.csv";
-    std::vector<std::string> vec = {"Lc_HE_1.csv", "Lc_HE_2.csv", "Lc_HE_3.csv",
-                                    "Lc_HE_4.csv", "Lc_HE_5.csv", "Lc_HE_6.csv",
-                                    "Lc_HE_7.csv", "Lc_HE_8.csv", "Lc_HE_9.csv"};
-//
-//    tester.setParam("implNum", impl_space, [](int){return 10;});
-//    tester.setParam("attrNum", attr_space, [](int){return 100;});
-//    tester.setParam("gen", gen_space);
-//    tester.setParam("repeat", rep_space);
-//
-//    std::vector<std::string> algos = {"Maier", "MinCover"};
-//    tester.GridTest({"implNum", "attrNum", "gen", "repeat"}, algos, root + filename);
+    std::string filename = "TripleMMB.csv";
 
-    LinClosureBenchmark(root + filename);
+    tester.setParam("implNum", impl_space);
+    tester.setParam("attrNum", attr_space, [](int){return 50;});
+    tester.setParam("gen", gen_space);
+    tester.setParam("repeat", rep_space);
 
+    std::vector<std::string> algos = {"Maier", "MinCover", "Berczi"};
 
-    return 0;
+    boost::timer::auto_cpu_timer t;
+
+    tester.GridTest({"implNum", "attrNum", "gen", "repeat"}, algos, root + filename);
 }
 

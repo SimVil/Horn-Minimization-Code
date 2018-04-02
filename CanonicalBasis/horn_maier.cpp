@@ -66,7 +66,7 @@ void HORN::getEquivalenceMatrix(const std::vector<FCA::ImplicationInd> &L, std::
 /// getEquivalenceClasses: gets all equivalence classes of a basis.
 std::vector<FCA::BitSet> HORN::getEquivalenceClasses(const std::vector<FCA::ImplicationInd> &L)
 {
-    unsigned int implNum = L.size();
+    unsigned int implNum = (unsigned) L.size();
     std::vector<FCA::BitSet> classes;
 
     std::vector<FCA::BitSet> matrix;
@@ -111,14 +111,14 @@ void HORN::MaierMinimization(const std::vector<FCA::ImplicationInd> &L, std::vec
 
     // I - redundancy elimination
     std::vector<FCA::ImplicationInd> minL = HORN::redundancyElimination(L);
-    unsigned int implNum = minL.size();
-    unsigned int attrNum = minL.front().Premise().size();
+    unsigned int implNum = (unsigned) minL.size();
+    unsigned int attrNum = (unsigned) minL.front().Premise().size();
 
     // II - Direct determination removal
 
     // get equivalence classes
     std::vector<FCA::BitSet> E_L = HORN::getEquivalenceClasses(minL);
-    unsigned int Enum = E_L.size();
+    unsigned int Enum = (unsigned) E_L.size();
 
     // removing direct determination
     std::vector<FCA::ImplicationInd> tmpL = minL;

@@ -42,7 +42,7 @@ void interval::getRange(std::vector<unsigned> &range) {
         range.emplace_back((unsigned) value);
     }
 
-    if (range.back() != sup){ range.emplace_back(sup); }
+    if (range.back() < sup){ range.emplace_back(sup); }
 
 }
 
@@ -84,6 +84,7 @@ GridTester::GridTester() :
     algos["Shock"] = HORN::ShockMinimization;
     algos["Berczi"] = HORN::BercziMinimization;
     algos["MinCover"] = FCA::MinimalCover;
+    algos["AFP"] = HORN::AFPMinimization;
 
 
 };
@@ -114,14 +115,12 @@ void GridTester::GridSearch(const std::vector<std::string> &param, std::vector<s
 
     std::cout << "#======= Generating test cases: ";
     double tenth = 0.1 * (double) product_size;
-    double percent = tenth;
 
     while (i < product_size){
         std::fill(uplet.begin(), uplet.end(), 0);
 
-        percent = ((double) i / (double) product_size);
-        if (percent >= tenth){
-            tenth += tenth;
+        if (i >= tenth){
+            tenth += 0.1 * (double) product_size;;
             std::cout << "==";
         }
 
@@ -265,9 +264,9 @@ void GridTester::GridTest(const std::vector<std::string> &param, const std::vect
     }
 
     int i = 0, j = 0;
-    int size = nuplets.size();
+    int size = (int) nuplets.size();
     double tenth = 0.1 * (double) size;
-    double percent = tenth;
+    int percent = 10;
 
     std::cout << "##====== Performing test cases: ";
 
@@ -281,10 +280,10 @@ void GridTester::GridTest(const std::vector<std::string> &param, const std::vect
 
         PerformTestCase(testcaseparam, algs, testcase);
 
-        percent = ((double) j / (double) size);
-        if (percent >= tenth){
-            tenth += tenth;
-            std::cout << " " << percent * 100. << "% ";
+        if ((double)j >= tenth){
+            tenth += 0.1 * (double) size;
+            std::cout << " " << percent << "% ";
+            percent += 10;
 
         }
         j++;
@@ -309,8 +308,9 @@ void GridTester::ExportResults(std::string &filename, std::list<std::map<std::st
         file << "Algo," << "attrNum," << "implNum," << "gen," << "repeat,";
         file << "min," << "max," << "mean," << "var" << std::endl;
 
-        int size = results.size();
+        int size = (int) results.size();
         int j = 0;
+        double tenth = 0.1 * (double) results.size();
 
         for (auto &testcase : results){
 
@@ -321,8 +321,8 @@ void GridTester::ExportResults(std::string &filename, std::list<std::map<std::st
                 file << algo.second.mean << "," << algo.second.var_t << std::endl;
             }
 
-            double percent = ((double) j / (double) size) * 100.;
-            if ((int) percent % 10 == 0){
+            if (j >= tenth){
+                tenth += 0.1 * (double) results.size();
                 std::cout << "==";
 
             }
