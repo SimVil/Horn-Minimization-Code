@@ -53,6 +53,7 @@ void displayTestCase(std::vector<std::string> names, unsigned implNum, unsigned 
 class interval {
 protected:
     int (*range_function)(int);
+    std::vector<unsigned> range;
     unsigned inf, sup;
 
 public:
@@ -63,6 +64,7 @@ public:
 
     void setInterval(unsigned i, unsigned j) { assert(j >= i); inf = i, sup = j ;};
     void setRangefunction(int (*f)(int)) {range_function = f;};
+    void setRange(const std::vector<unsigned> &udef_range);
     void getRange( std::vector<unsigned> &range);
 };
 
@@ -94,6 +96,8 @@ public:
     void setParam(const std::vector<std::string> &params, const bounds &b, int (*f)(int));
     void setParam(const std::string &param, const bounds &b);
     void setParam(const std::string &param, const bounds &b, int (*f)(int));
+    void setParam(const std::vector<std::string> &params, const std::vector<unsigned> &udef_r);
+    void setParam(const std::string &param, const std::vector<unsigned> &udef_r);
 
     void AvailableAlgos();
 
