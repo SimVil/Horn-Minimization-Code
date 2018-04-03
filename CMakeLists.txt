@@ -52,7 +52,7 @@ add_executable(Algorithms
         ${IMP_TOOLS}
         ${GRID_TEST}
         ${ALGO_HEADER}
-        ${ALGO_CODE})
+        ${ALGO_CODE} CanonicalBasis/horn_day.cpp CanonicalBasis/horn_day.h)
 
 add_executable(Algorithms2
         catch.h
@@ -60,7 +60,7 @@ add_executable(Algorithms2
         ${IMP_TOOLS}
         ${GRID_TEST}
         ${ALGO_HEADER}
-        ${ALGO_CODE})
+        ${ALGO_CODE} CanonicalBasis/horn_day.cpp CanonicalBasis/horn_day.h)
 
 target_link_libraries(Algorithms
         ${BOOST_LIBRARYDIR}/libboost_timer-mgw73-mt-x64-1_66.a

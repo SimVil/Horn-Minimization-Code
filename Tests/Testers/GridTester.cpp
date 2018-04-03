@@ -22,28 +22,38 @@ interval::interval(const unsigned i, const unsigned s, int (*f)(int)) {
     inf = i;
     sup = s;
     range_function = f;
+    range = std::vector<unsigned>();
 }
 
 interval::interval(const unsigned i, const unsigned s) {
     inf = i;
     sup = s;
     range_function = identity;
+    range = std::vector<unsigned>();
 }
 
-void interval::getRange(std::vector<unsigned> &range) {
-    range.clear();
-    unsigned value = inf;
-    unsigned x = 0;
-    range.emplace_back(inf);
+void interval::getRange(std::vector<unsigned> &u_range) {
+    u_range.clear();
 
-    while ((unsigned) value + range_function(x) < sup){
-        x++;
-        value += (unsigned) range_function(x);
-        range.emplace_back((unsigned) value);
+    if(range.empty()){
+        unsigned value = inf;
+        unsigned x = 0;
+        range.emplace_back(inf);
+
+        while (value + range_function(x) < sup){
+            x++;
+            value += (unsigned) range_function(x);
+            range.emplace_back(value);
+        }
+
+        if (range.back() < sup){ range.emplace_back(sup); }
     }
 
-    if (range.back() < sup){ range.emplace_back(sup); }
+    u_range = range;
+}
 
+void interval::setRange(const std::vector<unsigned> &udef_range) {
+    range = udef_range;
 }
 
 
@@ -169,6 +179,16 @@ void GridTester::setParam(const std::string &param, const std::pair<unsigned, un
     parameters[param].setInterval(bounds.first, bounds.second);
     parameters[param].setRangefunction(f);
 
+}
+
+void GridTester::setParam(const std::vector<std::string> &params, const std::vector<unsigned> &udef_r) {
+    for (const std::string &s : params){
+        setParam(s, udef_r);
+    }
+}
+
+void GridTester::setParam(const std::string &param, const std::vector<unsigned> &udef_r) {
+    parameters[param].setRange(udef_r);
 }
 
 
@@ -308,7 +328,6 @@ void GridTester::ExportResults(std::string &filename, std::list<std::map<std::st
         file << "Algo," << "attrNum," << "implNum," << "gen," << "repeat,";
         file << "min," << "max," << "mean," << "var" << std::endl;
 
-        int size = (int) results.size();
         int j = 0;
         double tenth = 0.1 * (double) results.size();
 

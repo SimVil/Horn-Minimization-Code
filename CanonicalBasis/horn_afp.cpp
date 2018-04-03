@@ -51,12 +51,17 @@ void HORN::AFPMinimization(const std::vector<FCA::ImplicationInd> &L, std::vecto
                             if (copy.Conclusion() != D){
                                 S.emplace_back(copy.Premise());
                             }
+                            break; // exit for beuark
                         }
                     }
 
                 }
 
-                if (!found) { Lc.emplace_back(FCA::ImplicationInd(Lc_closure, M)); }
+                if (!found) {
+                    M.reset();
+                    FCA::LinClosure::Apply(Lc_closure, L, M);
+                    Lc.emplace_back(FCA::ImplicationInd(Lc_closure, M));
+                }
 
             }
 

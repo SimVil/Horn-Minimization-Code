@@ -121,7 +121,7 @@ void ImplicationTools::ExpandTheory(theory &L, double growth) {
 
     size_t growth_size = L.size() + (int) (L.size() * growth);
 
-    int inda, indb;
+    unsigned long long inda, indb;
     FCA::ImplicationInd impl;
 
     std::vector<FCA::ImplicationInd (*)(const FCA::ImplicationInd&, const FCA::ImplicationInd&)> functions;
@@ -133,8 +133,8 @@ void ImplicationTools::ExpandTheory(theory &L, double growth) {
     functions.emplace_back(ImplicationTools::ArmstrongReductionP);
 
     boost::random::mt19937 gen(rand());
-    boost::random::uniform_int_distribution<int> implchoice(0, growth_size - 1);
-    boost::random::uniform_int_distribution<int> fchoice(0, functions.size() - 1);
+    boost::random::uniform_int_distribution<int> implchoice(0, (int) growth_size - 1);
+    boost::random::uniform_int_distribution<int> fchoice(0, (int) functions.size() - 1);
 
 
     while (L.size() < growth_size){
@@ -150,14 +150,16 @@ void ImplicationTools::ExpandTheory(theory &L, double growth) {
 
 }
 
-void ImplicationTools::GenerateTheory(theory &L, size_t attrNum, size_t implNum, bool closempty) {
+void ImplicationTools::GenerateTheory(theory &L, size_t attrNum, size_t implNum, bool closempty, bool reduced) {
 
     L.clear();
     FCA::ImplicationInd tmp;
-    int emptypremise = (int) closempty;
+    auto emptypremise = (int) closempty;
+    size_t i = 0;
     size_t iter;
+    double tenth = (double) implNum * 0.1;
 
-    for(size_t i = 0; i < implNum; ++i){
+    do {
         iter = 0;// if we fail to generate satisfying implications, we accept the next one.
         do {
             tmp = ImplicationTools::GetRandomImplication(attrNum);
@@ -170,7 +172,18 @@ void ImplicationTools::GenerateTheory(theory &L, size_t attrNum, size_t implNum,
 
         } while (emptypremise > 1 && tmp.Premise().none() && iter < MAX_ITER);
         L.emplace_back(tmp);
-    }
+
+        if(reduced && L.size() >= (unsigned) tenth){
+            ImplicationTools::Reduce(L);
+
+            if(L.size() >= (unsigned) tenth){
+                tenth += (double) implNum * 0.1;
+            }
+        }
+
+        ++i;
+
+    } while (L.size() < implNum && (i < 10 * implNum));
 }
 
 
