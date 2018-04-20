@@ -11,6 +11,7 @@
 #include "horn_shock.h"
 #include "horn_afp.h"
 #include "horn_day.h"
+#include "horn_duquenne.h"
 #include "fca_minimization.h"
 
 

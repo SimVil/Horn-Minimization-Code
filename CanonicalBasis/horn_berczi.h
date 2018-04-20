@@ -10,6 +10,8 @@
 #include "fca_implications.h"
 #include "fca_linclosure.h"
 
+typedef std::vector<FCA::ImplicationInd> theory;
+
 namespace HORN
 {
 
@@ -41,7 +43,8 @@ namespace HORN
     /// \return the Duquenne-Guigues basis of L.
     void BercziMinimization(const std::vector<FCA::ImplicationInd> &L, std::vector<FCA::ImplicationInd> &Lc);
 
-    void BodyBercziMinimization(const std::vector<FCA::ImplicationInd> &L, std::vector<FCA::ImplicationInd> &Lc);
+
+    void BercziMinImproved(const theory &L, theory Lc);
 
 }
 
