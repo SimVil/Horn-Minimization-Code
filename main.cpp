@@ -107,44 +107,44 @@ void LinClosureHardBenchmark(const std::string &filename){
 
 int main(int, char **){
     srand((unsigned) time(nullptr));
-//    GridTester tester;
-//    std::pair<unsigned, unsigned> attr_space(100, 100);
-//    //std::pair<unsigned, unsigned> impl_space(500, 500);
-//    std::vector<unsigned> impl_space = {400, 500, 2000, 2300, 2500, 3000, 3500, 3800, 7500, 8000, 8500};
-//    std::pair<unsigned, unsigned> gen_space(20, 20);
-//    std::pair<unsigned, unsigned> rep_space(5, 5);
-//
-//    std::string root = "D:/Documents/Courses/Master Thesis/Code/Algorithms/Tests/CSVLogs/";
-//    std::string filename = "DoubleMM_NRd.csv";
-//
-//    tester.setParam("implNum", impl_space);
-//    tester.setParam("attrNum", attr_space, [](int){return 50;});
-//    tester.setParam("gen", gen_space);
-//    tester.setParam("repeat", rep_space);
-//
-//    std::vector<std::string> algos = {"Maier", "MinCover"};
-//
-//    boost::timer::auto_cpu_timer t;
-//
-//    tester.GridTest({"implNum", "attrNum", "gen", "repeat"}, algos, root + filename);
+    GridTester tester;
+    std::pair<unsigned, unsigned> attr_space(100, 100);
+    //std::pair<unsigned, unsigned> impl_space(50, 1000);
+    std::vector<unsigned> impl_space = {8500};// 400, 500, 2000, 2300, 2500, 3000, 3500, 3800};
+    std::pair<unsigned, unsigned> gen_space(100, 100);
+    std::pair<unsigned, unsigned> rep_space(1, 1);
 
-    std::string root = "D:/Documents/Courses/Master Thesis/Code/Algorithms/Tests/BitImplicationFiles/";
-    std::string filename = "impp_";
+    std::string root = "D:/Documents/Courses/Master Thesis/Code/Algorithms/Tests/CSVLogs/";
+    std::string filename = "Triple_MMB_pt5_NRd.csv";
 
-    theory L, La, Lb;
-    size_t implNum = 10, attrNum = 10;
-    int gen = 500;
-    for(int i = 0; i < gen; ++i){
-        ImplicationTools::GenerateTheory(L, attrNum, implNum, true, true);
+    tester.setParam("implNum", impl_space);
+    tester.setParam("attrNum", attr_space, [](int){return 50;});
+    tester.setParam("gen", gen_space);
+    tester.setParam("repeat", rep_space);
 
-        HORN::AFPMinimization(L, La);
-        FCA::MinimalCover(L, Lb);
+    std::vector<std::string> algos = {"Maier", "MinCover"}; //, "MinCover", "Berczi"};
 
-        if (La.size() != Lb.size()){
-            std::cout << i << " - AFP: " << La.size() << ", " << "Min: " << Lb.size() << std::endl;
-            //ImplicationTools::WriteFile(root + filename + std::to_string(i) + ".imp", L);
-        }
-    }
+    boost::timer::auto_cpu_timer t;
+
+    tester.GridTest({"implNum", "attrNum", "gen", "repeat"}, algos, root + filename);
+
+//    std::string root = "D:/Documents/Courses/Master Thesis/Code/Algorithms/Tests/BitImplicationFiles/";
+//    std::string filename = "impp_";
+//
+//    theory L, La, Lb;
+//    size_t implNum = 10, attrNum = 10;
+//    int gen = 500;
+//    for(int i = 0; i < gen; ++i){
+//        ImplicationTools::GenerateTheory(L, attrNum, implNum, true, true);
+//
+//        HORN::AFPMinimization(L, La);
+//        FCA::MinimalCover(L, Lb);
+//
+//        if (La.size() != Lb.size()){
+//            std::cout << i << " - AFP: " << La.size() << ", " << "Min: " << Lb.size() << std::endl;
+//            //ImplicationTools::WriteFile(root + filename + std::to_string(i) + ".imp", L);
+//        }
+//    }
 
     return 0;
 }
