@@ -68,7 +68,7 @@ void FCA::MinimalCover(const std::vector<FCA::ImplicationInd> &implSet, std::vec
         Lc[implCur] = Lc.back();
         Lc.pop_back();
 
-        Closure::Apply(impl.Premise(), Lc, impl.Premise());
+        LinClosure::Apply(impl.Premise(), Lc, impl.Premise());
         if (impl.Premise().is_proper_subset_of(impl.Conclusion()))
         {
             Lc.push_back(impl);
