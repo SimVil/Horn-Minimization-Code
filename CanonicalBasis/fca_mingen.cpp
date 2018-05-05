@@ -2,7 +2,7 @@
 
 # include <queue>
 
-# include "test_functions.h"
+//# include "test_functions.h"
 # include <iostream>
 
 static bool IsMinGen(FCA::BitSet a, const FCA::BitSet aClosed, const FCA::Context &cxt)

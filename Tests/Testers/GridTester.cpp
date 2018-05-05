@@ -2,7 +2,6 @@
 // Created by Simon on 22/03/2018.
 //
 
-#include <horn_shock.h>
 #include "GridTester.h"
 
 int identity(int x) { return x; }
@@ -91,10 +90,12 @@ GridTester::GridTester() :
         algos(std::map<std::string, void (*)(const theory &, theory &)> ()) {
 
     algos["Maier"] = HORN::MaierMinimization;
-    algos["Shock"] = HORN::ShockMinimization;
-    algos["Berczi"] = HORN::BercziMinimization;
-    algos["MinCover"] = FCA::MinimalCover;
+    algos["BercziLin"] = HORN::BercziMinimization<FCA::LinClosure>;
+    algos["BercziClo"] = HORN::BercziMinimization<FCA::Closure>;
+    algos["MinCoverLin"] = FCA::MinimalCover<FCA::LinClosure>;
+    algos["MinCoverClo"] = FCA::MinimalCover<FCA::Closure>;
     algos["AFP"] = HORN::AFPMinimization;
+    algos["Duquenne"] = HORN::DuquenneMinimization;
 
 
 };

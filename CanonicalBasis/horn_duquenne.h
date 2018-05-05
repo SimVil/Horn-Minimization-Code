@@ -16,7 +16,7 @@ namespace HORN {
 
     void DuquenneMinimization(const theory &L, theory &Lc);
 
-    void getQuasiClosed(const theory L, theory &Lc);
+    void getQuasiClosed(const theory &L, theory &Lc);
 
 }
 

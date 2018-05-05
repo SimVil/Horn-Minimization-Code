@@ -15,7 +15,7 @@ bool HORN::LecticComp(const FCA::ImplicationInd &I_1, const FCA::ImplicationInd 
         i++;
     } while (i < size && eq);
 
-    eq = (eq || !I_1.Premise().test(i - 1));
+    eq = (eq || I_1.Premise().test(i - 1));
 
     return eq;
 }
@@ -28,68 +28,64 @@ void HORN::DuquenneMinimization(const theory &L, theory &Lc) {
 
     theory Lm;
     FCA::ImplicationInd tmp;
-    size_t left = 0;
-    size_t right = Lc.size() - 1;
-    size_t i = 0;
-    bool redundant = false;
+    size_t size = Lc.size() - 1;
+    size_t j = 0;
+    auto i = (int) size;
+    bool redundant;
 
-    while(left <= right){
-
-        i = 0;
+    while(i >= 0){
+        j = 0;
         redundant = false;
-        while(i < Lm.size() && !redundant){
-            if (Lm[i].Premise().is_subset_of(Lc[left].Premise()) &&
-                    !Lm[i].Conclusion().is_subset_of(Lc[left].Premise())){
+        tmp = Lc[i];
 
-                tmp = Lc[right];
-                Lc[right] = Lc[left];
-                Lc[left] = tmp;
-                right --;
+        while(j < Lm.size() && !redundant){
+
+            if (Lm[j].Premise().is_subset_of(tmp.Premise()) &&
+                    !Lm[j].Conclusion().is_subset_of(tmp.Premise())){
+
+                Lc[i] = Lc.back();
+                Lc.pop_back();
                 redundant = true;
-
             }
+            ++j;
         }
 
-        if (!redundant){
-            tmp = Lc[left];
-            FCA::LinClosure::Apply(Lc[left].Conclusion(), Lc, tmp.Conclusion());
-            Lm.emplace_back(tmp);
-            left ++;
-
+        if(!redundant){
+            FCA::Closure::Apply(tmp.Conclusion(), Lc, tmp.Conclusion());
+            Lm.push_back(tmp);
         }
+
+        --i;
+
     }
 
-    Lc.erase(Lc.begin() + left, Lc.end());
+    Lc = Lm;
 
 }
 
 
-void HORN::getQuasiClosed(const theory L, theory &Lc) {
+void HORN::getQuasiClosed(const theory &L, theory &Lc) {
     Lc.clear();
 
     if (L.empty())
         return;
 
-    FCA::BitSet pclosure, cclosure;
     FCA::ImplicationInd imp;
     Lc = L;
 
-    size_t size = Lc.size();
+    size_t size = Lc.size() - 1;
 
-    for (size_t i = 0; i < size; ++i)
+    for (auto i = (int) size; i >= 0; --i)
     {
         imp = Lc[i];
-        Lc[i].Premise().reset();
-        Lc[i].Conclusion().reset();
+        Lc[i] = Lc.back();
+        Lc.pop_back();
 
-        pclosure.reset();
-        cclosure.reset();
-
-        FCA::LinClosure::Apply(imp.Premise(), Lc, pclosure);
-        if (!imp.Conclusion().is_subset_of(pclosure))
+        FCA::Closure::Apply(imp.Premise(), Lc, imp.Premise());
+        if (!imp.Conclusion().is_subset_of(imp.Premise()))
         {
             imp.Conclusion() |= imp.Premise();
-            Lc[i] =  FCA::ImplicationInd(imp.Premise(), imp.Conclusion();
+            Lc.emplace_back(FCA::ImplicationInd(imp.Premise(), imp.Conclusion()));
         }
 
     }

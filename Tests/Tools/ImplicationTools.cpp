@@ -300,3 +300,74 @@ FCA::ImplicationInd ImplicationTools::ArmstrongReductionP(const FCA::Implication
 
     return impl;
 }
+
+
+void ImplicationTools::ReadContext(FCA::Context &c, std::string &filename)
+{
+    size_t objNum;
+    size_t attrNum;
+    std::vector<std::string> obj, attr;
+    std::vector<std::vector<bool> > table;
+    std::string first;
+
+    std::ifstream file(filename);
+
+    if(file.is_open()){
+        file >> first >> objNum >> attrNum;
+
+        table.resize(objNum);
+        obj.resize(objNum);
+        attr.resize(attrNum);
+        //std::getline(file, obj[0]);
+        std::getline(file, obj[0]);
+        for (size_t i = 0; i < objNum; ++i)
+        {
+            std::getline(file, obj[i]);
+        }
+
+        for (size_t i = 0; i < attrNum; ++i)
+        {
+            std::getline(file, attr[i]);
+        }
+
+        for (size_t i = 0; i < objNum; ++i)
+        {
+            table[i].resize(attrNum);
+
+            std::string lineCur;
+            std::getline(file, lineCur);
+            for (size_t j = 0; j < attrNum; ++j)
+                table[i][j] = lineCur[j] != '.';
+        }
+
+        c = FCA::Context(obj, attr, table);
+        file.close();
+
+    }
+
+}
+
+void ImplicationTools::ExportContextualTheory(const FCA::Context &c, std::string &name){
+
+    std::string root = "D:/Documents/Courses/Master Thesis/Code/Algorithms/Tests/RealDatasets/";
+
+    theory L = FCA::ComputeProperBasis(c);
+    ImplicationTools::WriteFile(root + name + "_proper.imp", L);
+
+    L = FCA::MinGen1(c);
+    ImplicationTools::WriteFile(root + name + "_mingen.imp", L);
+
+    L = FCA::ObjIncremental(c);
+    ImplicationTools::WriteFile(root + name + "_obj.imp", L);
+
+    theory Lc;
+    FCA::MinimalCover<FCA::Closure>(L, Lc);
+    ImplicationTools::WriteFile(root + name + "_min.imp", Lc);
+
+}
+
+void ImplicationTools::getRealBasis(std::string &filename, std::string &name) {
+    FCA::Context c;
+    ImplicationTools::ReadContext(c, filename);
+    ImplicationTools::ExportContextualTheory(c, name);
+}

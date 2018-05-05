@@ -8,7 +8,7 @@
 
 #include <vector>
 #include "fca_implications.h"
-#include "fca_linclosure.h"
+#include "fca_closure_operators.h"
 
 typedef std::vector<FCA::ImplicationInd> theory;
 
@@ -41,10 +41,77 @@ namespace HORN
     ///
     /// \param L [in] the basis to minimize.
     /// \return the Duquenne-Guigues basis of L.
-    void BercziMinimization(const std::vector<FCA::ImplicationInd> &L, std::vector<FCA::ImplicationInd> &Lc);
+    template <typename ClosureOperator>
+    void BercziMinimization(const theory &L, theory &Lc);
+
+    template <>
+    void BercziMinimization<FCA::LinClosure>(const theory &L, theory &Lc);
+}
 
 
-    void BercziMinImproved(const theory &L, theory Lc);
+// ==== template instanciation for general closure operators ====
+
+// template def of BercziMinimization
+template <typename ClosureOperator>
+void HORN::BercziMinimization(const theory &L, theory &Lc){
+
+    Lc.clear();
+    if(L.empty()){ return; }
+
+    std::vector<FCA::BitSet> L_closures;
+    std::vector<FCA::BitSet> Lc_closures;
+    FCA::BitSet tmp;
+
+    // compute and stack the closures of premises of L
+    for(auto &imp : L){
+        ClosureOperator::Apply(imp.Premise(), L, tmp);
+        L_closures.emplace_back(tmp);
+        Lc_closures.emplace_back(imp.Premise());
+    }
+
+    size_t implNum = L.size();
+    size_t attrNum = L.front().Premise().size();
+    size_t min_index = 0;
+    bool found = false; // allows to deal with empty canonical basis.
+
+    FCA::BitSet closure_L(attrNum);
+    FCA::BitSet closure_minL(attrNum);
+    FCA::BitSet min_L(attrNum);
+    FCA::BitSet min_minL(attrNum);
+    min_minL.set();
+
+    FCA::BitSet closed(implNum);
+    closed.reset();
+
+    while(!closed.all()){
+        for(size_t imp = 0; imp < implNum; imp++){
+            if(!closed.test(imp)){
+                ClosureOperator::Apply(Lc_closures[imp], Lc, Lc_closures[imp]);
+
+                if (Lc_closures[imp] != L_closures[imp] &&
+                    (Lc_closures[imp].is_subset_of(min_minL) || Lc_closures[imp].count() < min_minL.count())){
+
+                    min_minL = Lc_closures[imp];
+                    min_L = L_closures[imp];
+                    min_index = imp;
+                    found = true;
+                }
+
+                if (Lc_closures[imp] == L_closures[imp]){
+                    closed.set(imp);
+                }
+            }
+        }
+
+        if(found)
+        {
+            Lc.emplace_back(FCA::ImplicationInd(min_minL, min_L));
+            closed.set(min_index);
+            min_index = 0;
+            min_minL.set();
+            found = false;
+        }
+    }
 
 }
 

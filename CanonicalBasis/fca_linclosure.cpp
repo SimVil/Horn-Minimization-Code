@@ -185,3 +185,114 @@ bool FCA::LinClosure::Apply(const BitSet &current, const std::vector<FCA::Implic
     return true;
 }
 
+
+void FCA::LinClosure::removeImplication(int index, const FCA::ImplicationInd &imp,
+                                        std::vector<size_t> &count, std::vector<std::vector<size_t>> &list) {
+
+    count[index] = count.back();
+    count.pop_back();
+
+    size_t attrNum = imp.Premise().size();
+
+    for(size_t i = 0; i < attrNum; ++i){
+        if (imp.Premise().test(i)){
+            list[i][index] = list[i].back();
+            list[i].pop_back();
+        }
+
+    }
+}
+
+
+void FCA::LinClosure::addImplication(const FCA::ImplicationInd &imp, std::vector<size_t> &count,
+                                     std::vector<std::vector<size_t>> &list) {
+
+    count.emplace_back(imp.Premise().count());
+
+    size_t attrNum = imp.Premise().size();
+    size_t index = count.size() - 1;
+
+    for(size_t i = 0; i < attrNum; ++i){
+        if (imp.Premise().test(i)){
+            list[i].emplace_back(index);
+        }
+    }
+
+}
+
+
+void FCA::LinClosure::initCounters(const theory &L, std::vector<size_t> &count,
+                              std::vector<std::vector<size_t>> &list, const size_t *size) {
+
+    if (count.empty() && list.empty()){
+        if (size){
+            list.resize(*size);
+        } else {
+            list.resize(L.front().Premise().size());
+        }
+
+        for (auto &imp : L){
+            LinClosure::addImplication(imp, count, list);
+        }
+    }
+}
+
+
+void FCA::LinClosure::Apply(const FCA::BitSet &X, const theory &L, FCA::BitSet &LX,
+                            std::vector<size_t> &count, std::vector<std::vector<size_t>> &list, const size_t *size) {
+
+    // if count and list are not empty, does nothing
+    LinClosure::initCounters(L, count, list, size);
+
+    std::vector<size_t> ccounter = count;
+
+    BitSet newclosure(X);
+    size_t implNum = L.size();
+    size_t attrNum = X.size();
+
+    // deal with non-closed empty set.
+    for (size_t i = 0; i < implNum; ++i){
+        if (ccounter[i] == 0) {
+            newclosure |= L[i].Conclusion();
+        }
+    }
+
+    std::vector<size_t> update;
+    std::vector<bool> use(attrNum, false);
+
+    for (size_t i = 0; i < attrNum; ++i){
+        if (X.test(i)){
+            use[i] = true;
+            update.push_back(i);
+        }
+    }
+
+    while(!update.empty()){
+        size_t ind = update.back();
+        update.pop_back();
+
+        if(!list[ind].empty()){
+            for (size_t i = 0; i < list[ind].size(); ++i)
+            {
+                size_t impInd = list[ind][i];
+                --ccounter[impInd];
+
+                if (ccounter[impInd] == 0)
+                {
+                    BitSet add = L[impInd].Conclusion() - newclosure;
+                    newclosure |= add;
+
+                    for (size_t attrInd = 0; attrInd < attrNum; ++attrInd)
+                        if (add.test(attrInd) && !use[attrInd])
+                        {
+                            update.push_back(attrInd);
+                            use[attrInd] = true;
+                        }
+                }
+            }
+        }
+
+    }
+
+    LX = newclosure;
+}

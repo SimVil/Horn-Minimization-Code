@@ -23,4 +23,6 @@
 # include "fca_concept.h"
 # include "fca_implications.h"
 
+typedef std::vector<FCA::ImplicationInd> theory;
+
 # endif //FCA_DATASTRUCTUERS_H_

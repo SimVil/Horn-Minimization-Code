@@ -5,7 +5,7 @@
 bool FCA::Closure::Apply(const FCA::BitSet &current, const std::vector<FCA::ImplicationInd> &implications, FCA::BitSet &res, size_t prefLen)
 {
     if (!implications.empty() && (implications.front().Premise().size() != current.size() || implications.front().Conclusion().size() != current.size()))
-        throw std::invalid_argument("size of premise and consclusion must agreed with size of current");
+        throw std::invalid_argument("size of premise and conclusion must agreed with size of current");
 
     const size_t attrNum = current.size();
     const size_t implNum = implications.size();
@@ -23,12 +23,7 @@ bool FCA::Closure::Apply(const FCA::BitSet &current, const std::vector<FCA::Impl
             if (!used[implInd] && implications[implInd].Premise().is_subset_of(newClosure))
             {
                 newClosure |= implications[implInd].Conclusion();
-
-                if (!IsPrefixIdentical(newClosure, current, prefLen))
-                {
-                    return false;
-                }
-
+                if (!IsPrefixIdentical(newClosure, current, prefLen)) { return false; }
                 used[implInd] = true;
             }
     }
