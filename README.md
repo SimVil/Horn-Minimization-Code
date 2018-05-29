@@ -9,7 +9,7 @@ README, providing some theoretical recap.
 
 We will adopt the following notations for our pseudo-code notations:
 
-  * `A -> B` for an implication
+  * `A --> B` for an implication
   * `M |= A -> B` means that `M` is a model of `L`
   * `L(A)` is the closure of a set `A` under an implication base `L`
 
@@ -17,16 +17,16 @@ Let us give an example of pseudo-code through one closure algorithm
 
 ```python
 Algo: Closure() [
-  'IN: L, X a set'
-  'OUT: L(X), the closure of X under L
+  #IN: L, X a set
+  "OUT: L(X), the closure of X under L"
 
   repeat = True
   update = X
 
   while (repeat is True) {
     repeat = False
-    for A -> B in L {
-      if (not(update |= A -> B)) {
+    for A --> B in L {
+      if (not(update |= A --> B)) {
         update = update u B
         repeat = True
       }
