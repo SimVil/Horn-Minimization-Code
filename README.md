@@ -9,26 +9,26 @@ README, providing some theoretical recap.
 
 We will adopt the following notations for our pseudo-code notations:
 
-  * `A --> B` for an implication
+  * `A -> B` for an implication
   * `M |= A -> B` means that `M` is a model of `L`
   * `L(A)` is the closure of a set `A` under an implication base `L`
 
 Let us give an example of pseudo-code through one closure algorithm
 
 ```C
-Algo: Closure() [
-  //IN: L, X a set
+Algo: Closure [
+  //IN: L a base, X a set
   //OUT: L(X), the closure of X under L
 
-  repeat = True
+  repeat = true
   update = X
 
-  while (repeat is True) {
-    repeat = False
+  while (repeat is true) do {
+    repeat = false
     for A -> B in L {
-      if (not(update |= A --> B)) {
+      if (not(update |= A -> B)) {
         update = update u B
-        repeat = True
+        repeat = true
       }
     }
   }
@@ -50,7 +50,27 @@ We implemented 5 algorithms:
 
 For closure algorithms, please refer to **[5, 9]**
 
-### MinCover
+```C
+Algo: "MinCover" [
+  //IN: L a base
+  //OUT: L in its canonical version
+
+  for (A -> B in L) do {
+    L = L - {A -> B}
+    B = L(A u B)
+    L = L u {A -> B}
+  }
+
+  for (A -> B in L) do {
+    L = L - {A -> B}
+    A = L(A)
+    if (L(A) != B) {
+      L = L u {A -> B}
+    }
+  }
+
+]
+```
 
 
 ## Main dish: implementation
