@@ -15,14 +15,14 @@ We will adopt the following notations for our pseudo-code notations:
 
 Let us give an example of pseudo-code through one closure algorithm
 
-```C
-Algo: Closure [
+```python
+Closure() [
   //IN: L a base, X a set
   //OUT: L(X), the closure of X under L
 
   repeat = true
   update = X
-
+"pouet"
   while (repeat is true) do {
     repeat = false
     for A -> B in L {
@@ -51,12 +51,9 @@ We implemented 5 algorithms:
 For closure algorithms, please refer to **[5, 9]**
 
 ```C
-MinCover(
+MinCover()[
   //IN: L a base
   //OUT: L in its canonical version
-)[
-
-  char = "pouet"
 
   for (A -> B in L) do {
     L = L - {A -> B}
