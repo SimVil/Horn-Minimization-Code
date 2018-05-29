@@ -15,17 +15,17 @@ We will adopt the following notations for our pseudo-code notations:
 
 Let us give an example of pseudo-code through one closure algorithm
 
-```python
+```C
 Algo: Closure() [
-  #IN: L, X a set
-  "OUT: L(X), the closure of X under L"
+  //IN: L, X a set
+  //OUT: L(X), the closure of X under L
 
   repeat = True
   update = X
 
   while (repeat is True) {
     repeat = False
-    for A --> B in L {
+    for A -> B in L {
       if (not(update |= A --> B)) {
         update = update u B
         repeat = True
