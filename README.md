@@ -51,9 +51,12 @@ We implemented 5 algorithms:
 For closure algorithms, please refer to **[5, 9]**
 
 ```C
-MinCover(L) [
+MinCover(
   //IN: L a base
   //OUT: L in its canonical version
+)[
+
+  char = "pouet"
 
   for (A -> B in L) do {
     L = L - {A -> B}
