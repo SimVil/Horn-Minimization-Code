@@ -51,7 +51,7 @@ We implemented 5 algorithms:
 For closure algorithms, please refer to **[5, 9]**
 
 ```C
-Algo: "MinCover" [
+Algo: #MinCover [
   //IN: L a base
   //OUT: L in its canonical version
 
