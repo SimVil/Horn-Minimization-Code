@@ -5,6 +5,39 @@ relies on the code of https://github.com/yazevnul/fcai for FCA and closure
 testing purposes. We will be interested in implementation details, uses, possible improvements and so on. One can be interested in reading the pdf version of this
 README, providing some theoretical recap.
 
+### notations
+
+We will adopt the following notations for our pseudo-code notations:
+
+  * `A -> B` for an implication
+  * `M |= A -> B` means that `M` is a model of `L`
+  * `L(A)` is the closure of a set `A` under an implication base `L`
+
+Let us give an example of pseudo-code through one closure algorithm
+
+```python
+Algo: Closure() [
+  'IN: L, X a set'
+  'OUT: L(X), the closure of X under L
+
+  repeat = True
+  update = X
+
+  while (repeat is True) {
+    repeat = False
+    for A -> B in L {
+      if (not(update |= A -> B)) {
+        update = update u B
+        repeat = True
+      }
+    }
+  }
+
+  return update
+
+]
+```
+
 ### Algorithms
 
 We implemented 5 algorithms:
