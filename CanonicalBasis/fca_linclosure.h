@@ -10,14 +10,15 @@ namespace FCA
     class LinClosure
     {	
     public:		
-        static bool Apply(const BitSet &current, const std::vector<ImplicationInd> &implications, BitSet &res,
-                          const size_t prefLen = 0, BitSet *Implied = NULL, int *reach = NULL);
+        static bool Apply(const BitSet &current, const theory &implications, BitSet &res,
+                          const size_t* prefLen = nullptr, BitSet *Implied = nullptr, size_t *reach = nullptr, bool stop = false);
 
         static bool Apply(const BitSet &current, const std::vector<ImplicationInd> &implications, std::vector<size_t> &premiseCount,
                           std::vector<std::vector<size_t> > &list, size_t &prevImplSetSize, BitSet &res, const size_t prefLen = 0) ;
 
         static void Apply(const BitSet &X, const theory &L, BitSet &LX,
-                          std::vector<size_t> &count, std::vector<std::vector<size_t> > &list, const size_t *size = nullptr);
+                          std::vector<size_t> &count, std::vector<std::vector<size_t> > &list, const size_t *size = nullptr,
+                          BitSet *Implied = nullptr, size_t *reach = nullptr, bool stop = false);
 
         // heavily relies on swapping process
         static void removeImplication(int index, const FCA::ImplicationInd &imp,

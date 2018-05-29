@@ -5,6 +5,7 @@
 #include "horn_duquenne.h"
 
 
+// !!! reverse lectic order
 bool HORN::LecticComp(const FCA::ImplicationInd &I_1, const FCA::ImplicationInd &I_2) {
     size_t size = I_1.Premise().size();
     size_t i = 0;
@@ -21,7 +22,8 @@ bool HORN::LecticComp(const FCA::ImplicationInd &I_1, const FCA::ImplicationInd 
 }
 
 
-void HORN::DuquenneMinimization(const theory &L, theory &Lc) {
+template <>
+void HORN::DuquenneMinimization<FCA::LinClosure>(const theory &L, theory &Lc) {
 
     getQuasiClosed(L, Lc); // Lc contains quasi-closure on the left
     std::sort(Lc.begin(), Lc.end(), LecticComp);
@@ -32,6 +34,9 @@ void HORN::DuquenneMinimization(const theory &L, theory &Lc) {
     size_t j = 0;
     auto i = (int) size;
     bool redundant;
+
+    std::vector<size_t> l_count;
+    std::vector<std::vector<size_t>> l_list;
 
     while(i >= 0){
         j = 0;
@@ -44,14 +49,14 @@ void HORN::DuquenneMinimization(const theory &L, theory &Lc) {
                     !Lm[j].Conclusion().is_subset_of(tmp.Premise())){
 
                 Lc[i] = Lc.back();
-                Lc.pop_back();
+                //Lc.pop_back();  // let's see if this is an improvement with linclosure !
                 redundant = true;
             }
             ++j;
         }
 
         if(!redundant){
-            FCA::Closure::Apply(tmp.Conclusion(), Lc, tmp.Conclusion());
+            FCA::LinClosure::Apply(tmp.Conclusion(), Lc, tmp.Conclusion(), l_count, l_list);
             Lm.push_back(tmp);
         }
 

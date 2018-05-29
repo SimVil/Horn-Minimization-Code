@@ -74,6 +74,8 @@ namespace ImplicationTools {
     // filename of a context and name of dataset
     void getRealBasis(std::string &filename, std::string &name);
 
+    bool AreEquivalent(const theory &L1, const theory &L2);
+
 
 };
 

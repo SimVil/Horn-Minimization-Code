@@ -4,8 +4,8 @@
 
 #include "horn_afp.h"
 
-
-void HORN::AFPMinimization(const std::vector<FCA::ImplicationInd> &L, std::vector<FCA::ImplicationInd> &Lc) {
+template <>
+void HORN::AFPMinimization<FCA::LinClosure>(const theory &L, theory &Lc) {
     Lc.clear();
 
     if (L.empty())
@@ -14,12 +14,17 @@ void HORN::AFPMinimization(const std::vector<FCA::ImplicationInd> &L, std::vecto
     size_t attrNum = L.front().Premise().size();
     size_t implNum = L.size();
 
+    int maximum_size = 0;
+
     std::list<FCA::BitSet> S;
     FCA::BitSet premise(attrNum), Lc_closure(attrNum), L_closure;
     FCA::BitSet C(attrNum), D(attrNum), M(attrNum);
     FCA::ImplicationInd copy;
     bool found;
     M.set();
+
+    std::vector<size_t> l_count;
+    std::vector<std::vector<size_t>> l_list;
 
     for (auto &impL : L){
         S.clear();
@@ -28,8 +33,8 @@ void HORN::AFPMinimization(const std::vector<FCA::ImplicationInd> &L, std::vecto
         do{
             premise = S.back();
             S.pop_back();
-            FCA::LinClosure::Apply(premise, Lc, Lc_closure);
-            FCA::LinClosure::Apply(Lc_closure, L, L_closure);
+            FCA::Closure::Apply(premise, Lc, Lc_closure);
+            FCA::LinClosure::Apply(Lc_closure, L, L_closure, l_count, l_list);
 
             if(Lc_closure != L_closure){
                 found = false;
@@ -40,7 +45,7 @@ void HORN::AFPMinimization(const std::vector<FCA::ImplicationInd> &L, std::vecto
 
 
                     if (C != impLc.Premise()){
-                        FCA::LinClosure::Apply(C, L, D);
+                        FCA::LinClosure::Apply(C, L, D, l_count, l_list);
                         if (C != D){
                             found = true;
                             copy = impLc;
@@ -51,6 +56,10 @@ void HORN::AFPMinimization(const std::vector<FCA::ImplicationInd> &L, std::vecto
                             if (copy.Conclusion() != D){
                                 S.emplace_back(copy.Premise());
                             }
+
+                            if(S.size() > maximum_size){
+                                maximum_size = (int) S.size();
+                            }
                             break; // exit for beuark
                         }
                     }
@@ -59,7 +68,7 @@ void HORN::AFPMinimization(const std::vector<FCA::ImplicationInd> &L, std::vecto
 
                 if (!found) {
                     M.reset();
-                    FCA::LinClosure::Apply(Lc_closure, L, M);
+                    FCA::LinClosure::Apply(Lc_closure, L, M, l_count, l_list);
                     Lc.emplace_back(FCA::ImplicationInd(Lc_closure, M));
                 }
 
@@ -68,5 +77,7 @@ void HORN::AFPMinimization(const std::vector<FCA::ImplicationInd> &L, std::vecto
         } while (!S.empty());
 
     }
+
+    //std::cout << "stack maximum size: " << Lc.size() << std::endl;
 
 }

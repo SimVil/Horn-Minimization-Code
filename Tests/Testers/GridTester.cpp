@@ -62,7 +62,7 @@ result::result(std::map<std::string, unsigned> &tparam, statistics &tres) :
     mean = (double) boost::accumulators::extract_result<boost::accumulators::tag::mean>(tres);
     min_t = (double) boost::accumulators::extract_result<boost::accumulators::tag::min>(tres);
     max_t = (double) boost::accumulators::extract_result<boost::accumulators::tag::max>(tres);
-    var_t = (double) boost::accumulators::extract_result<boost::accumulators::tag::moment<2>>(tres);
+    var_t = (double) boost::accumulators::extract_result<boost::accumulators::tag::variance>(tres);
 }
 
 
@@ -89,13 +89,16 @@ GridTester::GridTester() :
         parameters(std::map<std::string, interval> ()),
         algos(std::map<std::string, void (*)(const theory &, theory &)> ()) {
 
-    algos["Maier"] = HORN::MaierMinimization;
+    algos["MaierClo"] = HORN::MaierMinimization<FCA::Closure, FCA::Closure>;
+    algos["MaierLin"] = HORN::MaierMinimization<FCA::Closure, FCA::LinClosure>;
     algos["BercziLin"] = HORN::BercziMinimization<FCA::LinClosure>;
     algos["BercziClo"] = HORN::BercziMinimization<FCA::Closure>;
     algos["MinCoverLin"] = FCA::MinimalCover<FCA::LinClosure>;
     algos["MinCoverClo"] = FCA::MinimalCover<FCA::Closure>;
-    algos["AFP"] = HORN::AFPMinimization;
-    algos["Duquenne"] = HORN::DuquenneMinimization;
+    algos["AFPLin"] = HORN::AFPMinimization<FCA::LinClosure>;
+    algos["AFPClo"] = HORN::AFPMinimization<FCA::Closure>;
+    algos["DuquenneLin"] = HORN::DuquenneMinimization<FCA::LinClosure>;
+    algos["DuquenneClo"] = HORN::DuquenneMinimization<FCA::Closure>;
 
 
 };
@@ -200,15 +203,25 @@ void GridTester::PerformTestCase(std::map<std::string, unsigned> &param,
     theory L, Lc;
     FCA::BitSet emptyset(param["attrNum"]);
     emptyset.reset();
+    int buf = 0;
+    int percent = 0;
+    bool comput = false;
 
     std::map<std::string, statistics> acc;
+    boost::random::mt19937 gen(rand());
+    boost::random::uniform_int_distribution<int> implchoice(1, 9);
 
     if (verbose)
         displayTestCase(algnm, param["implNum"], param["attrNum"], param["gen"]);
 
     for(unsigned i = 0; i < param["gen"]; ++i){
+        percent = implchoice(gen);
         ImplicationTools::GenerateTheory(L, param["attrNum"], param["implNum"]);
+//        ImplicationTools::GenerateTheory(L, param["attrNum"], (param["implNum"] * percent) / 10);
+//        double growth = (10./ ((double) percent)) - 1.0;
+//        ImplicationTools::ExpandTheory(L, growth);
 
+        comput = false;
         for (auto &s: algnm){
 
             if (algos.find(s) != algos.end()){
@@ -218,10 +231,15 @@ void GridTester::PerformTestCase(std::map<std::string, unsigned> &param,
                     algos[s](L, Lc);
 
                     t.stop();
+//                    if(!comput){
+//                        std::cout << Lc.size() << std::endl;
+//                        comput = true;
+//                    }
+
                     Lc.clear();
                     t.resume();
                 }
-                acc[s](std::stod(t.format(5, "%t")) / (double) param["repeat"]);
+                acc[s](std::stod(t.format(8, "%t")) / (double) param["repeat"]);
             }
         }
 
@@ -276,6 +294,8 @@ void GridTester::GridTest(const std::vector<std::string> &param, const std::vect
     std::vector<std::vector<unsigned>> nuplets;
     GridSearch(param, nuplets);
 
+    // results is one mapping per element of the parameter product
+    // space
     std::list<std::map<std::string, result_t>> results;
     std::map<std::string, result_t> testcase;
     std::map<std::string, unsigned> testcaseparam;
@@ -310,11 +330,12 @@ void GridTester::GridTest(const std::vector<std::string> &param, const std::vect
         j++;
 
         results.emplace_back(testcase);
+        ExportResults(filename, results);
     }
 
     std::cout << " Done!" << std::endl << std::endl;
 
-    ExportResults(filename, results);
+
 
 }
 
@@ -357,3 +378,85 @@ void GridTester::ExportResults(std::string &filename, std::list<std::map<std::st
     }
 
 }
+
+void GridTester::PerformNamedTest(const std::string name, const std::string &filename,
+                                  const std::vector<std::string> &algnm,
+                                  std::map<std::string, result_t> &results, bool verbose) {
+    theory L, Lc;
+    ImplicationTools::ReadFile(filename, L);
+    std::map<std::string, statistics> acc;
+
+    std::map<std::string, unsigned> param;
+    param["implNum"] = (int) L.size();
+    param["attrNum"] = (int) L.front().Premise().size();
+    param["repeat"] = 10;
+    param["gen"] = 0;
+
+
+    for(auto &s: algnm){
+        boost::timer::cpu_timer t;
+        for(int i = 0; i < param["repeat"]; ++i) {
+            if (algos.find(s) != algos.end()) {
+
+                algos[s](L, Lc);
+
+                t.stop();
+                param["gen"] = (int) Lc.size();
+                Lc.clear();
+                t.resume();
+
+            }
+
+        }
+
+        acc[s](std::stod(t.format(8, "%t")) / (double) param["repeat"]);
+
+    }
+
+    for (auto &p : acc){
+        results[p.first] = result_t(param, p.second);
+    }
+
+}
+
+
+void GridTester::NamedTest(const std::map<std::string, std::string> &names, const std::vector<std::string> &algs,
+                           std::string outfile) {
+
+    // one result per test
+    std::list<std::map<std::string, result_t>> results;
+    std::map<std::string, result_t> testcase;  // results of all algos for one test
+    std::string n = outfile;
+
+    for (auto &s : algs){
+        testcase[s] = result_t();
+    }
+
+    std::cout << "##====== Performing test cases: ";
+
+    auto size = (int) names.size();
+    double tenth = 0.1 * (double) size;
+    int percent = 10, j = 0;
+
+    for (auto &test : names){
+        PerformNamedTest(test.first, test.second, algs, testcase, false);
+
+        if ((double)j >= tenth){
+            tenth += 0.1 * (double) size;
+            std::cout << " " << percent << "% ";
+            percent += 10;
+
+        }
+        j++;
+
+        n = outfile + "_" + test.first + ".csv";
+        results.emplace_back(testcase);
+        ExportResults(n, results);
+        results.clear();
+
+    }
+
+    std::cout << " Done!" << std::endl << std::endl;
+}
+
+

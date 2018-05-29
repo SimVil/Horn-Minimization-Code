@@ -136,10 +136,14 @@ void ImplicationTools::ExpandTheory(theory &L, double growth) {
     boost::random::uniform_int_distribution<int> implchoice(0, (int) growth_size - 1);
     boost::random::uniform_int_distribution<int> fchoice(0, (int) functions.size() - 1);
 
+    int MAX_GROWTH = growth_size;
+    int i = 0;
 
-    while (L.size() < growth_size){
+
+    while (L.size() < growth_size && i < growth_size){
         inda = implchoice(gen) % L.size();
         indb = implchoice(gen) % L.size();
+        i++;
 
         impl = functions[fchoice(gen)](L[inda], L[indb]);
         L.emplace_back(impl);
@@ -357,12 +361,13 @@ void ImplicationTools::ExportContextualTheory(const FCA::Context &c, std::string
     L = FCA::MinGen1(c);
     ImplicationTools::WriteFile(root + name + "_mingen.imp", L);
 
-    L = FCA::ObjIncremental(c);
-    ImplicationTools::WriteFile(root + name + "_obj.imp", L);
-
     theory Lc;
-    FCA::MinimalCover<FCA::Closure>(L, Lc);
+    HORN::MaierMinimization<FCA::Closure, FCA::Closure>(L, Lc);
     ImplicationTools::WriteFile(root + name + "_min.imp", Lc);
+
+    L = Lc;
+    FCA::MinimalCover<FCA::Closure>(L, Lc);
+    ImplicationTools::WriteFile(root + name + "_DG.imp", Lc);
 
 }
 
@@ -370,4 +375,30 @@ void ImplicationTools::getRealBasis(std::string &filename, std::string &name) {
     FCA::Context c;
     ImplicationTools::ReadContext(c, filename);
     ImplicationTools::ExportContextualTheory(c, name);
+}
+
+
+bool ImplicationTools::AreEquivalent(const theory &L1, const theory &L2) {
+
+    if(L1.size() != L2.size()){
+        return false;
+    }
+
+    FCA::BitSet tmp;
+    for(auto &imp : L1){
+        FCA::Closure::Apply(imp.Premise(), L2, tmp);
+        if(!imp.Conclusion().is_subset_of(tmp)){
+            return false;
+        }
+    }
+
+    for(auto &imp : L2){
+        FCA::Closure::Apply(imp.Premise(), L1, tmp);
+        if(!imp.Conclusion().is_subset_of(tmp)){
+            return false;
+        }
+    }
+
+    return true;
+
 }

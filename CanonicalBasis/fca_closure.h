@@ -10,7 +10,8 @@ namespace FCA
     class Closure
     {	
     public:			
-        static bool Apply(const BitSet &current, const std::vector<ImplicationInd> &implications, BitSet &res, const size_t prefLen = 0);
+        static bool Apply(const BitSet &current, const theory &implications, BitSet &res,
+                          const size_t *prefLen = nullptr, BitSet *Implied = nullptr, size_t *reach = nullptr, bool stop = false);
     };
 }
 

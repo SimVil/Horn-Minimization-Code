@@ -2,8 +2,8 @@
 
 # include "fca_linclosure.h"
 
-bool FCA::LinClosure::Apply(const FCA::BitSet &current, const std::vector<FCA::ImplicationInd> &implications,
-                            FCA::BitSet &res, size_t prefLen, BitSet *implied,  int *reach)
+bool FCA::LinClosure::Apply(const FCA::BitSet &current, const theory &implications,
+                            FCA::BitSet &res, const size_t *prefLen, BitSet *implied,  size_t *reach, bool stop)
 {
     if (!implications.empty() && (implications.front().Premise().size() != current.size() || implications.front().Conclusion().size() != current.size()))
         throw std::invalid_argument("size of premise and consclusion must agreed with size of current");
@@ -19,9 +19,11 @@ bool FCA::LinClosure::Apply(const FCA::BitSet &current, const std::vector<FCA::I
     std::vector<std::vector<size_t> > list(attrNum);
 
     //initialization
-    
-    for (size_t implInd = 0; implInd < implNum; ++implInd)
-    {			
+
+    size_t implInd = 0;
+    bool reached = false;
+
+    while(implInd < implNum && !reached){
         count[implInd] = implications[implInd].Premise().count();
 
         if (count[implInd] == 0)
@@ -29,23 +31,25 @@ bool FCA::LinClosure::Apply(const FCA::BitSet &current, const std::vector<FCA::I
             newdep |= implications[implInd].Conclusion();
             if (implied)
             {
-                if(implied->test(implInd) && *reach == -1)
+                if(implied->test(implInd) && stop)
                 {
                     *reach = (int) implInd;
+                    reached = true;
                 }
                 implied->set(implInd);
             }
         }
 
-        for (size_t attrInd = 0; attrInd < attrNum; ++attrInd)			
-            if (implications[implInd].Premise().test(attrInd))		
+        for (size_t attrInd = 0; attrInd < attrNum; ++attrInd)
+            if (implications[implInd].Premise().test(attrInd))
             {
-                list[attrInd].push_back(implInd);			
+                list[attrInd].push_back(implInd);
             }
+
+        implInd ++;
     }
 
     std::vector<size_t> update;
-    //update.reserve(1000);
     std::vector<bool> use(attrNum, false);
 
     for (size_t i = 0; i < attrNum; ++i)
@@ -59,7 +63,7 @@ bool FCA::LinClosure::Apply(const FCA::BitSet &current, const std::vector<FCA::I
 
     //computation
 
-    while (!update.empty())
+    while (!update.empty() && !reached)
     {
         size_t ind = update.back();
         update.pop_back();
@@ -79,16 +83,17 @@ bool FCA::LinClosure::Apply(const FCA::BitSet &current, const std::vector<FCA::I
                     // L |= X --> Premise(impInd)
                     // the next condition deserves to detect direct determination
                     // cf Maier Algorithm
-                    if(implied->test(impInd) && *reach == -1)
+                    if(implied->test(impInd) && stop)
                     {
                         *reach = impInd;
+                        reached = true;
                     }
                     implied->set(impInd);
                 }
 
 
-                if (!IsPrefixIdentical(newdep, current, prefLen))
-                    return false;
+//                if (!IsPrefixIdentical(newdep, current, *prefLen))
+//                    return false;
 
                 for (size_t attrInd = 0; attrInd < attrNum; ++attrInd)				
                     if (add.test(attrInd) && !use[attrInd])					
@@ -238,8 +243,9 @@ void FCA::LinClosure::initCounters(const theory &L, std::vector<size_t> &count,
 }
 
 
-void FCA::LinClosure::Apply(const FCA::BitSet &X, const theory &L, FCA::BitSet &LX,
-                            std::vector<size_t> &count, std::vector<std::vector<size_t>> &list, const size_t *size) {
+void FCA::LinClosure::Apply(const BitSet &X, const theory &L, BitSet &LX,
+                            std::vector<size_t> &count, std::vector<std::vector<size_t> > &list, const size_t *size,
+                            BitSet *implied, size_t *reach, bool stop) {
 
     // if count and list are not empty, does nothing
     LinClosure::initCounters(L, count, list, size);
@@ -249,12 +255,26 @@ void FCA::LinClosure::Apply(const FCA::BitSet &X, const theory &L, FCA::BitSet &
     BitSet newclosure(X);
     size_t implNum = L.size();
     size_t attrNum = X.size();
+    size_t j = 0;
+
+    bool reached = false;
 
     // deal with non-closed empty set.
-    for (size_t i = 0; i < implNum; ++i){
-        if (ccounter[i] == 0) {
-            newclosure |= L[i].Conclusion();
+    while (j < implNum && !reached){
+        if (ccounter[j] == 0) {
+            newclosure |= L[j].Conclusion();
+
+            if(implied){
+                if(implied->test(j) && stop){
+                    *reach = j;
+                    reached = true;
+                }
+
+                implied->set(j);
+            }
+
         }
+        ++j;
     }
 
     std::vector<size_t> update;
@@ -267,12 +287,12 @@ void FCA::LinClosure::Apply(const FCA::BitSet &X, const theory &L, FCA::BitSet &
         }
     }
 
-    while(!update.empty()){
+    while(!update.empty() && !reached){
         size_t ind = update.back();
         update.pop_back();
 
         if(!list[ind].empty()){
-            for (size_t i = 0; i < list[ind].size(); ++i)
+            for(size_t i = 0; i < list[ind].size(); ++i)
             {
                 size_t impInd = list[ind][i];
                 --ccounter[impInd];
@@ -281,6 +301,15 @@ void FCA::LinClosure::Apply(const FCA::BitSet &X, const theory &L, FCA::BitSet &
                 {
                     BitSet add = L[impInd].Conclusion() - newclosure;
                     newclosure |= add;
+
+                    if(implied){
+                        if(implied->test(impInd) && stop){
+                            *reach = impInd;
+                            reached = true;
+                        }
+
+                        implied->set(impInd);
+                    }
 
                     for (size_t attrInd = 0; attrInd < attrNum; ++attrInd)
                         if (add.test(attrInd) && !use[attrInd])

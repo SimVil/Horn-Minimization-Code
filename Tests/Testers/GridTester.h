@@ -17,7 +17,7 @@
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics/stats.hpp>
 #include <boost/accumulators/statistics/mean.hpp>
-#include <boost/accumulators/statistics/moment.hpp>
+#include <boost/accumulators/statistics/variance.hpp>
 #include <boost/accumulators/statistics/min.hpp>
 #include <boost/accumulators/statistics/max.hpp>
 #include <boost/accumulators/statistics/sum.hpp>
@@ -30,7 +30,7 @@ typedef boost::accumulators::stats<boost::accumulators::tag::mean,
         boost::accumulators::tag::min,
         boost::accumulators::tag::max,
         boost::accumulators::tag::sum,
-        boost::accumulators::tag::moment<2>> metrics;
+        boost::accumulators::tag::variance> metrics;
 
 typedef boost::accumulators::accumulator_set<double, metrics> statistics;
 
@@ -89,6 +89,12 @@ public:
                          std::map<std::string, result_t> &results,
                          bool verbose = false);
 
+    void PerformNamedTest(const std::string name, const std::string &filename,
+                          const std::vector<std::string> &algnm,
+                          std::map<std::string, result_t> &results, bool verbose);
+
+    void NamedTest(const std::map<std::string, std::string> &names, const std::vector<std::string> &algs,
+                   std::string outfile);
 
     void GridTest(const std::vector<std::string> &param, const std::vector<std::string> &algos, std::string filename);
 

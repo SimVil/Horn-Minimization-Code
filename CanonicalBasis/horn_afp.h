@@ -5,15 +5,102 @@
 #ifndef ALGORITHMS_HORN_AFP_H
 #define ALGORITHMS_HORN_AFP_H
 
-#include "fca_linclosure.h"
-#include "fca_implications.h"
+#include "fca_closure_operators.h"
+#include "fca_datastructures.h"
 #include <list>
 #include <deque>
 #include <map>
 
 namespace HORN {
 
-    void AFPMinimization(const std::vector<FCA::ImplicationInd> &L, std::vector<FCA::ImplicationInd> &Lc);
+    template <typename ClosureOperator>
+    void AFPMinimization(const theory &L, theory &Lc);
+
+    template <>
+    void AFPMinimization<FCA::LinClosure>(const theory &L, theory &Lc);
+
+}
+
+
+// ==== template instanciation for general closure operators ====
+
+
+// template definition of AFP
+template <typename ClosureOperator>
+void HORN::AFPMinimization(const theory &L, theory &Lc) {
+    Lc.clear();
+
+    if (L.empty())
+        return;
+
+    size_t attrNum = L.front().Premise().size();
+    size_t implNum = L.size();
+
+    int maximum_size = 0;
+
+    std::list<FCA::BitSet> S;
+    FCA::BitSet premise(attrNum), Lc_closure(attrNum), L_closure;
+    FCA::BitSet C(attrNum), D(attrNum), M(attrNum);
+    FCA::ImplicationInd copy;
+    bool found;
+    M.set();
+
+    for (auto &impL : L){
+        S.clear();
+        S.emplace_back(impL.Premise());
+
+        do{
+            premise = S.back();
+            S.pop_back();
+            ClosureOperator::Apply(premise, Lc, Lc_closure);
+            ClosureOperator::Apply(Lc_closure, L, L_closure);
+
+            if(Lc_closure != L_closure){
+                found = false;
+
+                for (auto &impLc : Lc){
+                    C = impLc.Premise();
+                    C &= Lc_closure;  // C := A n X
+
+
+                    if (C != impLc.Premise()){
+                        ClosureOperator::Apply(C, L, D);
+                        if (C != D){
+                            found = true;
+                            copy = impLc;
+                            impLc = FCA::ImplicationInd(C, D);   // replacement in K
+                            Lc_closure |= D;
+                            S.emplace_back(Lc_closure);
+
+                            if (copy.Conclusion() != D){
+                                S.emplace_back(copy.Premise());
+                            }
+
+                            if(S.size() > maximum_size){
+                                maximum_size = (int) S.size();
+                            }
+
+                            break; // exit for beuark
+                        }
+                    }
+
+                }
+
+                if (!found) {
+                    M.reset();
+                    ClosureOperator::Apply(Lc_closure, L, M);
+                    Lc.emplace_back(FCA::ImplicationInd(Lc_closure, M));
+
+                }
+
+            }
+
+        } while (!S.empty());
+
+    }
+
+//    if (maximum_size >= L.size())
+//        std::cout << "stack maximum size: " << maximum_size << std::endl;
 
 }
 
