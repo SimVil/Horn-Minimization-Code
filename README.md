@@ -17,8 +17,8 @@ Let us give an example of pseudo-code through one closure algorithm
 
 ```C
 Closure() [
-  //IN: L a base, X a set
-  //OUT: L(X), the closure of X under L
+  IN(L a base, X a set)
+  OUT(L(X), the closure of X under L)
 
   repeat = true
   update = X
@@ -52,8 +52,8 @@ For closure algorithms, please refer to **[5, 9]**
 
 ```C
 MinCover() [
-  //IN: L a base
-  //OUT: L in its canonical version
+  IN(L a base)
+  OUT(L in its canonical version)
 
   for (A -> B in L) do {
     L = L - {A -> B}
