@@ -100,13 +100,13 @@ void worst_test(){
 int main(int, char **) {
     srand((unsigned) time(nullptr));
     GridTester tester;
-    std::vector<unsigned> impl_space = {100};
+    std::vector<unsigned> impl_space = {500};
     std::pair<unsigned, unsigned> attr_space(100, 10000);
     std::vector<unsigned> gen_space = {500};
     std::vector<unsigned> rep_space = {1};
 
     std::string root = "D:/Documents/Courses/Master Thesis/Code/Algorithms/Tests/CSVLogs/Random/";
-    std::string filename = "MinMaierDuq_100impl_500rep.csv";
+    std::string filename = "All_500impl_500rep.csv";
 
     tester.setParam("implNum", impl_space);
     tester.setParam("attrNum", attr_space, [](int){return 100;});
@@ -114,7 +114,7 @@ int main(int, char **) {
     tester.setParam("repeat", rep_space);
 
     // std::vector<std::string> algos = {"MaierClo", "AFPClo", "MinCoverClo", "DuquenneClo", "BercziClo"}; //, "MinCover", "Berczi"};
-    std::vector<std::string> algos = {"MinCoverClo", "DuquenneClo", "MaierClo"};
+    std::vector<std::string> algos = {"MinCoverClo", "DuquenneClo", "MaierClo", "BercziClo", "AFPClo"};
 
     boost::timer::auto_cpu_timer t;
     tester.GridTest({"implNum", "attrNum", "gen", "repeat"}, algos, root + filename);
