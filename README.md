@@ -3,7 +3,7 @@
 This repository contains implementation of Horn minimization algorithms. It
 relies on the code of https://github.com/yazevnul/fcai for FCA and closure
 testing purposes. We will be interested in implementation details, uses, possible improvements and so on. One can be interested in reading the pdf version of this
-README, providing some theoretical recap.
+README, providing some theoretical recap. $$A \longrightarrow B$$
 
 ### notations
 

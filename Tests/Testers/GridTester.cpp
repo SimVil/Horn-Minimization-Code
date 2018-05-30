@@ -216,10 +216,10 @@ void GridTester::PerformTestCase(std::map<std::string, unsigned> &param,
 
     for(unsigned i = 0; i < param["gen"]; ++i){
         percent = implchoice(gen);
-        ImplicationTools::GenerateTheory(L, param["attrNum"], param["implNum"]);
-//        ImplicationTools::GenerateTheory(L, param["attrNum"], (param["implNum"] * percent) / 10);
-//        double growth = (10./ ((double) percent)) - 1.0;
-//        ImplicationTools::ExpandTheory(L, growth);
+        //ImplicationTools::GenerateTheory(L, param["attrNum"], param["implNum"]);
+        ImplicationTools::GenerateTheory(L, param["attrNum"], (param["implNum"] * percent) / 10);
+        double growth = (10./ ((double) percent)) - 1.0;
+        ImplicationTools::ExpandTheory(L, growth);
 
         comput = false;
         for (auto &s: algnm){
