@@ -16,7 +16,7 @@ We will adopt the following notations for our pseudo-code notations:
 Let us give an example of pseudo-code through one closure algorithm
 
 ```yaml
-Closure
+Closure:
   IN: L a base, X a set
   OUT: L(X), the closure of X under L
 ```
