@@ -17,7 +17,7 @@ Let us give an example of pseudo-code through one closure algorithm
 
 ```yaml
 Closure:
-  IN: L a base, X a set
+  IN:  L a base, X a set
   OUT: L(X), the closure of X under L
 ```
 ```C++
@@ -47,13 +47,16 @@ We implemented 5 algorithms:
   * `BercziMin`: based on hypergraph representation of logical Horn formula (**[6]**)
   * `AFP`: an algorithm derived from query learning, further details in **[1, 2]**
 
-For closure algorithms, please refer to **[5, 9]**. Moreover  
+For closure algorithms, please refer to **[5, 9]**. Moreover, in this readme we assume
+knowledge about the minimization topic. See chapter III of **[9]** for an introduction,
+or https://github.com/SimVil/Horn-Minimization-Report.
 
-```C
-MinCover() [
-  IN(L a base)
-  OUT(L in its canonical version)
-
+```yaml
+MinCover:
+  IN:  a base L
+  OUT: L in its canonical form
+```
+```C++
   for (A -> B in L) do {
     L = L - {A -> B}
     B = L(A u B)
@@ -67,10 +70,35 @@ MinCover() [
       L = L u {A -> B}
     }
   }
-
-]
 ```
 
+```yaml
+DuquenneMin:
+  IN: a base L
+  OUT: Lc canonical version of L
+```
+```C++
+  for (A -> B in L) do {
+    L = L - {A -> B}
+    A = L(A)
+    if (not(B subset A)) {
+      B = B u A
+      L = L u {A -> B}
+    }
+  }
+  LecticOrdering(L)
+  Lc = {}
+  for (A -> B in L) do {
+    for (C -> D in Lc) do {
+      if ((C proper subset A) and not(D subset A)) {
+        L = L - {A -> B}
+        goto next A -> B in L
+      }
+    }
+    B = L(B)
+    Lc = Lc u {A -> B}
+  }
+```
 
 ## Main dish: implementation
 

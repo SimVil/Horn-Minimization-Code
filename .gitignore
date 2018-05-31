@@ -33,7 +33,6 @@ boost/*
 Documentation/*
 cmake-build-debug/*
 cmake-build-release/*
-Tests/CSVLogs/*
 Tests/BitImplicationFiles/*
 CanonicalBasis/CanonicalBasis.*
 Doxyfile

@@ -1,0 +1,4 @@
+Algo,attrNum,implNum,gen,repeat,min,max,mean,var
+Duquenne,18,849,1000,1,0,0.015625,0.00365625,5.71289e-005
+MaierClo,18,849,1000,1,0,0.015625,0.004,6.25e-005
+MinCoverClo,18,849,1000,1,0,0.03125,0.00998438,0.000156494

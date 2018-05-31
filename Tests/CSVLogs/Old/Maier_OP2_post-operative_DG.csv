@@ -1,0 +1,3 @@
+Algo,attrNum,implNum,gen,repeat,min,max,mean,var
+MaierClo,26,625,625,1,0.015625,0.015625,0.015625,0.000244141
+MaierLin,26,625,625,1,0.015625,0.015625,0.015625,0.000244141
