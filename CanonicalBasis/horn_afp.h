@@ -13,6 +13,39 @@
 
 namespace HORN {
 
+    /// \brief Implementation of AFP-Based algorithm for implication systems.
+    ///
+    /// The function is a derivation of AFP algorithm of Angluin (HORN-1, 1992) "Learning Horn Conjunctions" in which
+    /// we do not have an oracle. The principle is to use a stack to store negative counter-ex generators. For each
+    /// implication, the premise is considered as a generator. Depending on the case we may either refine the hypothesis
+    /// Lc, or add new right-closed implications to it. Pseudo-code is as follows (simplified):
+    /// \code
+    ///     Initialize Lc to {};
+    ///     Initialize a stack S to {};
+    ///     for each A --> B of L do
+    ///         store A in S
+    ///         while S is not empty do
+    ///             X := Closure(Head(S), Lc)
+    ///             if X is a negative ex then
+    ///                 found := false
+    ///
+    ///                 if we can find C --> D in Lc such that C n X is a negative ex then
+    ///                     found := true
+    ///                     replace C --> D by C n X --> L(C n X) in Lc
+    ///                     X may still be a counter-ex, stack it into S
+    ///
+    ///                     if L(C n X) is smaller than D then
+    ///                         it may be a counter-ex, stack it into S
+    ///
+    ///             if found = false then
+    ///                 add X --> L(X) in Lc
+    ///
+    ///     return Lc
+    /// \endcode
+    ///
+    /// \tparam ClosureOperator a closure operator to use.
+    /// \param L input system to reduce.
+    /// \param Lc Duquenne-Guigues base of L
     template <typename ClosureOperator>
     void AFPMinimization(const theory &L, theory &Lc);
 

@@ -100,21 +100,21 @@ void worst_test(){
 int main(int, char **) {
     srand((unsigned) time(nullptr));
     GridTester tester;
-    std::vector<unsigned> attr_space = {100};
-    std::pair<unsigned, unsigned> impl_space(100, 10000);
-    std::vector<unsigned> gen_space = {500};
+    std::vector<unsigned> attr_space = {1000};
+    std::pair<unsigned, unsigned> impl_space(12500, 20000);
+    std::vector<unsigned> gen_space = {100};
     std::vector<unsigned> rep_space = {1};
 
     std::string root = "D:/Documents/Courses/Master Thesis/Code/Algorithms/Tests/CSVLogs/Random/";
-    std::string filename = "All_100attr_500rep.csv";
+    std::string filename = "All_1000attr_100rep_4.csv";
 
     tester.setParam("attrNum", attr_space);
-    tester.setParam("implNum", impl_space, [](int){return 100;});
+    tester.setParam("implNum", impl_space, [](int){return 500;});
     tester.setParam("gen", gen_space);
     tester.setParam("repeat", rep_space);
 
-    // std::vector<std::string> algos = {"MaierClo", "AFPClo", "MinCoverClo", "DuquenneClo", "BercziClo"}; //, "MinCover", "Berczi"};
-    std::vector<std::string> algos = {"MinCoverClo", "DuquenneClo", "MaierClo", "BercziClo", "AFPClo"};
+     std::vector<std::string> algos = {"MaierClo", "AFPClo", "MinCoverClo", "DuquenneClo", "BercziClo"}; //, "MinCover", "Berczi"};
+    //std::vector<std::string> algos = {"AFPClo"};
 
     boost::timer::auto_cpu_timer t;
     tester.GridTest({"implNum", "attrNum", "gen", "repeat"}, algos, root + filename);
@@ -132,13 +132,13 @@ int main(int, char **) {
 
 //int main(int, char **){
 //    GridTester tester;
-//    std::vector<std::string> algos = {"DuquenneLin", "MaierLin"};
+//    std::vector<std::string> algos = {"AFPClo"};
 //    std::string root = "D:/Documents/Courses/Master Thesis/Code/Algorithms/Tests/CSVLogs/Real/";
-//    std::string filename = root + "DuqMaierLin";
+//    std::string filename = root + "AFPClo2";
 //    std::map<std::string, std::string> names;
 //
 //    std::string imp_root = "D:/Documents/Courses/Master Thesis/Code/Algorithms/Tests/RealDatasets/";
-//    std::vector<std::string> testname = {"SPECT", "flare", "post-operative", "vote", "zoo", "breast-cancer", "breast-w"};
+//    std::vector<std::string> testname = {"flare"};
 //    //std::vector<std::string> testname = {"SPECT", "flare", "breast-cancer", "breast-w"};
 //
 //    std::vector<std::string> basistype = {"min", "DG", "proper", "min2", "mingen"};
@@ -160,13 +160,13 @@ int main(int, char **) {
 /// template main
 //int main(int, char **){
 //    GridTester tester;
-//    std::vector<unsigned> attr_space = {5};
-//    std::vector<unsigned> impl_space = {5};
-//    std::vector<unsigned> gen_space = {100};
+//    std::vector<unsigned> attr_space = {49};
+//    std::vector<unsigned> impl_space = {3400};
+//    std::vector<unsigned> gen_space = {2000};
 //    std::vector<unsigned> rep_space = {1};
 //
 //    std::string root = "D:/Documents/Courses/Master Thesis/Code/Algorithms/Tests/CSVLogs/";
-//    std::string filename = "Duquenne_Debug.csv";
+//    std::string filename = "Triple_Debug.csv";
 //
 //    tester.setParam("implNum", impl_space);
 //    tester.setParam("attrNum", attr_space);
@@ -175,7 +175,7 @@ int main(int, char **) {
 //
 //    boost::timer::auto_cpu_timer t;
 //
-//    std::vector<std::string> algos = {"Duquenne"};
+//    std::vector<std::string> algos = {"DuquenneClo", "MaierClo", "MinCoverClo"};
 //    tester.GridTest({"implNum", "attrNum", "gen", "repeat"}, algos, root + filename);
 //
 //    return 0;
