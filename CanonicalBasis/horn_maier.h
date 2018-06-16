@@ -1,4 +1,6 @@
 /// \file horn_maier.h
+/// \author Simon Vilmin
+/// \date 2018.
 ///
 /// Defines Maier Algorithm.
 

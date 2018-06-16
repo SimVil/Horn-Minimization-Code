@@ -1,11 +1,11 @@
-//
-// Created by Simon on 06/02/2018.
-//
+/// \file horn_maier.cpp
+/// \author Simon Vilmin
+/// \date 2018.
+///
+/// Implements functions of horn_maier.h
 
 #include "fca_closure_operators.h"
 #include "horn_maier.h"
-
-
 
 
 /// getEquivalenceMatrix: gets (square) matrix of implied premises.

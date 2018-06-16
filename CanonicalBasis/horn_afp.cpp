@@ -16,6 +16,7 @@ void HORN::AFPMinimization<FCA::LinClosure>(const theory &L, theory &Lc) {
 
     int maximum_size = 0;
 
+    // stack S
     std::list<FCA::BitSet> S;
     FCA::BitSet premise(attrNum), Lc_closure(attrNum), L_closure;
     FCA::BitSet C(attrNum), D(attrNum), M(attrNum);
@@ -23,6 +24,7 @@ void HORN::AFPMinimization<FCA::LinClosure>(const theory &L, theory &Lc) {
     bool found;
     M.set();
 
+    // counters for LinClosure
     std::vector<size_t> l_count;
     std::vector<std::vector<size_t>> l_list;
 
@@ -36,6 +38,7 @@ void HORN::AFPMinimization<FCA::LinClosure>(const theory &L, theory &Lc) {
             FCA::Closure::Apply(premise, Lc, Lc_closure);
             FCA::LinClosure::Apply(Lc_closure, L, L_closure, l_count, l_list);
 
+            // in case we found a negative counter-ex
             if(Lc_closure != L_closure){
                 found = false;
 
@@ -43,7 +46,7 @@ void HORN::AFPMinimization<FCA::LinClosure>(const theory &L, theory &Lc) {
                     C = impLc.Premise();
                     C &= Lc_closure;  // C := A n X
 
-
+                    // we found a smaller neg-ex
                     if (C != impLc.Premise()){
                         FCA::LinClosure::Apply(C, L, D, l_count, l_list);
                         if (C != D){
@@ -51,7 +54,7 @@ void HORN::AFPMinimization<FCA::LinClosure>(const theory &L, theory &Lc) {
                             copy = impLc;
                             impLc = FCA::ImplicationInd(C, D);   // replacement in K
                             Lc_closure |= D;
-                            S.emplace_back(Lc_closure);
+                            S.emplace_back(Lc_closure);  // X may still be a negative ex
 
                             if (copy.Conclusion() != D){
                                 S.emplace_back(copy.Premise());
@@ -60,12 +63,14 @@ void HORN::AFPMinimization<FCA::LinClosure>(const theory &L, theory &Lc) {
                             if(S.size() > maximum_size){
                                 maximum_size = (int) S.size();
                             }
-                            break; // exit for beuark
+                            break; // exit for may be changed --> not secured.
                         }
                     }
 
                 }
 
+                // no smaller counter-ex than X
+                // add X --> L(X) to Lc
                 if (!found) {
                     M.reset();
                     FCA::LinClosure::Apply(Lc_closure, L, M, l_count, l_list);

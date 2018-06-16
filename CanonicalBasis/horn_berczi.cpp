@@ -1,11 +1,13 @@
-//
-// Created by Simon on 09/02/2018.
-//
+/// \file horn_berczi.cpp
+/// \author Simon Vilmin
+/// \date 2018.
+///
+/// Implements LinClosure template version of horn_berczi.h
 
 #include "horn_berczi.h"
 
 
-
+/// BercziMinimization: BercziMinimization with LinClosure improvements.
 template <>
 void HORN::BercziMinimization<FCA::LinClosure>(const theory &L, theory &Lc){
 
@@ -16,8 +18,7 @@ void HORN::BercziMinimization<FCA::LinClosure>(const theory &L, theory &Lc){
     std::vector<FCA::BitSet> Lc_closures;
     FCA::BitSet tmp;
 
-    // we only need one pair of structure. Because we will compute
-    // closures in L only in one loop.
+    // structures for L
     std::vector<size_t> count;
     std::vector<std::vector<size_t>> list;
 
@@ -47,11 +48,15 @@ void HORN::BercziMinimization<FCA::LinClosure>(const theory &L, theory &Lc){
     std::vector<size_t> Lc_count;
     std::vector<std::vector<size_t>> Lc_list;
 
+    // when all premises share the same closure both in L and Lc, we are done.
     while(!closed.all()){
+
+        // look for the next minimal pseudo-closed set.
         for(size_t imp = 0; imp < implNum; imp++){
             if(!closed.test(imp)){
                 FCA::LinClosure::Apply(Lc_closures[imp], Lc, Lc_closures[imp], Lc_count , Lc_list, &attrNum);
 
+                // new min: based on size and subset.
                 if (Lc_closures[imp] != L_closures[imp] &&
                     (Lc_closures[imp].is_subset_of(min_minL) || Lc_closures[imp].count() < min_minL.count())){
 

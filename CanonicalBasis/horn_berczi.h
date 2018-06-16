@@ -3,6 +3,7 @@
 /// \date 2018.
 ///
 /// Defines Berczi Algorithm.
+
 #ifndef ALGORITHMS_HORN_BERCZI_H
 #define ALGORITHMS_HORN_BERCZI_H
 
@@ -15,7 +16,7 @@ typedef std::vector<FCA::ImplicationInd> theory;
 namespace HORN
 {
 
-    /// \brief Implementation of Berczi Algorithm for implicational basis minimization.
+    /// \brief Implementation of Berczi Algorithm for implicational basis minimization. (template)
     ///
     /// Ths function is the implementation of the algorithm proposed by Berczi and al. in "Directed Hypergraphs and
     /// Horn minimization". It relies on a bounding theorem of Boros and al. Initially, this algorithm was written
@@ -44,6 +45,10 @@ namespace HORN
     template <typename ClosureOperator>
     void BercziMinimization(const theory &L, theory &Lc);
 
+    /// \brief BercziMinimization with LinClosure improvements.
+    ///
+    /// \param L system to minimize.
+    /// \param Lc canonical representation of L.
     template <>
     void BercziMinimization<FCA::LinClosure>(const theory &L, theory &Lc);
 }
